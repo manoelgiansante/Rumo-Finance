@@ -366,10 +366,8 @@ export const [AppProvider, useApp] = createContextHook<AppContextValue>(() => {
 
   const addExpenseMutation = useMutation({
     mutationFn: async (expense: Omit<Expense, 'id' | 'createdAt'>) => {
-      const { data, error } = await supabase
-        .from('expenses')
-        .insert({
-          description: expense.description,
+      const insertData: any = {
+        description: expense.description,
           supplier_id: expense.supplierId,
           operation_id: expense.operationId,
           cost_center_id: expense.costCenterId,
@@ -395,7 +393,11 @@ export const [AppProvider, useApp] = createContextHook<AppContextValue>(() => {
           approved_at: expense.approvedAt?.toISOString(),
           paid_by: expense.paidBy,
           paid_at: expense.paidAt?.toISOString(),
-        })
+      };
+      
+      const { data, error } = await supabase
+        .from('expenses')
+        .insert(insertData)
         .select()
         .single();
 
@@ -422,12 +424,9 @@ export const [AppProvider, useApp] = createContextHook<AppContextValue>(() => {
       if (updates.paidBy) updateData.paid_by = updates.paidBy;
       if (updates.paidAt) updateData.paid_at = updates.paidAt.toISOString();
 
-      const { data, error } = await supabase
-        .from('expenses')
-        .update(updateData)
-        .eq('id', id)
-        .select()
-        .single();
+      const result = await (supabase.from('expenses') as any).update(updateData).eq('id', id).select().single();
+      const data = result.data;
+      const error = result.error;
 
       if (error) throw error;
       return data;
@@ -453,10 +452,8 @@ export const [AppProvider, useApp] = createContextHook<AppContextValue>(() => {
 
   const addRevenueMutation = useMutation({
     mutationFn: async (revenue: Omit<Revenue, 'id' | 'createdAt'>) => {
-      const { data, error } = await supabase
-        .from('revenues')
-        .insert({
-          description: revenue.description,
+      const insertData: any = {
+        description: revenue.description,
           client_id: revenue.clientId,
           operation_id: revenue.operationId,
           category: revenue.category,
@@ -470,7 +467,11 @@ export const [AppProvider, useApp] = createContextHook<AppContextValue>(() => {
           contract_id: revenue.contractId,
           notes: revenue.notes,
           created_by: revenue.createdBy,
-        })
+      };
+      
+      const { data, error } = await supabase
+        .from('revenues')
+        .insert(insertData)
         .select()
         .single();
 
@@ -492,12 +493,9 @@ export const [AppProvider, useApp] = createContextHook<AppContextValue>(() => {
       if (updates.status) updateData.status = updates.status;
       if (updates.receivedDate) updateData.received_date = updates.receivedDate.toISOString();
 
-      const { data, error } = await supabase
-        .from('revenues')
-        .update(updateData)
-        .eq('id', id)
-        .select()
-        .single();
+      const result = await (supabase.from('revenues') as any).update(updateData).eq('id', id).select().single();
+      const data = result.data;
+      const error = result.error;
 
       if (error) throw error;
       return data;
@@ -523,10 +521,8 @@ export const [AppProvider, useApp] = createContextHook<AppContextValue>(() => {
 
   const addClientMutation = useMutation({
     mutationFn: async (client: Omit<Client, 'id' | 'createdAt'>) => {
-      const { data, error } = await supabase
-        .from('clients')
-        .insert({
-          name: client.name,
+      const insertData: any = {
+        name: client.name,
           cpf_cnpj: client.cpfCnpj,
           type: client.type,
           email: client.email,
@@ -537,7 +533,11 @@ export const [AppProvider, useApp] = createContextHook<AppContextValue>(() => {
           zip_code: client.zipCode,
           state_registration: client.stateRegistration,
           active: client.active,
-        })
+      };
+      
+      const { data, error } = await supabase
+        .from('clients')
+        .insert(insertData)
         .select()
         .single();
 
@@ -557,12 +557,9 @@ export const [AppProvider, useApp] = createContextHook<AppContextValue>(() => {
       if (updates.phone) updateData.phone = updates.phone;
       if (updates.active !== undefined) updateData.active = updates.active;
 
-      const { data, error } = await supabase
-        .from('clients')
-        .update(updateData)
-        .eq('id', id)
-        .select()
-        .single();
+      const result = await (supabase.from('clients') as any).update(updateData).eq('id', id).select().single();
+      const data = result.data;
+      const error = result.error;
 
       if (error) throw error;
       return data;

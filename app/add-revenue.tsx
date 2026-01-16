@@ -19,7 +19,6 @@ export default function AddRevenueScreen() {
     }
 
     await addRevenue({
-      id: `rev-${Date.now()}`,
       description,
       clientId: selectedClient,
       operationId: selectedOperation,
@@ -31,7 +30,6 @@ export default function AddRevenueScreen() {
       paymentMethod: 'transfer',
       attachments: [],
       createdBy: 'user-1',
-      createdAt: new Date(),
     });
 
     router.back();
