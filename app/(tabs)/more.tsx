@@ -14,26 +14,26 @@ export default function MoreScreen() {
     {
       title: "Cadastros",
       items: [
-        { icon: Users, label: "Fornecedores", route: "/suppliers", color: Colors.primary },
         { icon: User, label: "Clientes", route: "/clients", color: Colors.info },
+        { icon: Users, label: "Equipe", route: "/team", color: Colors.primary },
         { icon: Building2, label: "Fazendas", route: "/farms", color: Colors.success },
-        { icon: DollarSign, label: "Contas Bancárias", route: "/bank-accounts", color: Colors.warning },
       ]
     },
     {
       title: "Operacional",
       items: [
         { icon: Package, label: "Estoque", route: "/stock", color: "#8B4513" },
-        { icon: ShoppingCart, label: "Compras", route: "/purchases", color: "#E67E22" },
-        { icon: TrendingUp, label: "Contas a Receber", route: "/receivables", color: "#27AE60" },
+        { icon: ShoppingCart, label: "Pedidos de Compra", route: "/purchase-orders", color: "#E67E22" },
         { icon: Briefcase, label: "Contratos", route: "/contracts", color: "#3498DB" },
       ]
     },
     {
       title: "Financeiro",
       items: [
+        { icon: TrendingUp, label: "Receitas", route: "/revenues", color: "#27AE60" },
         { icon: TrendingDown, label: "Fluxo de Caixa", route: "/cash-flow", color: "#9B59B6" },
         { icon: Archive, label: "Patrimônio", route: "/assets", color: "#34495E" },
+        { icon: DollarSign, label: "Orçamento", route: "/budget", color: "#F39C12" },
         { icon: Calendar, label: "Fechamento Mensal", route: "/closing", color: "#16A085" },
         { icon: FileText, label: "Fiscal", route: "/fiscal", color: "#C0392B" },
       ]
