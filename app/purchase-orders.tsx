@@ -1,7 +1,7 @@
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, TextInput, Platform } from "react-native";
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, TextInput, Platform, Modal } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Stack, router } from "expo-router";
-import { ArrowLeft, Search, Plus, Package, Clock, CheckCircle, XCircle, Truck } from "lucide-react-native";
+import { ArrowLeft, Search, Plus, Package, Clock, CheckCircle, XCircle, Truck, MapPin, Sprout, X, ChevronRight, Calendar } from "lucide-react-native";
 import Colors from "@/constants/colors";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -12,7 +12,13 @@ import { ptBR } from "date-fns/locale";
 interface PurchaseOrder {
   id: string;
   supplierId: string;
+  supplierName?: string;
   operationId: string;
+  operationName?: string;
+  seasonId?: string;
+  seasonName?: string;
+  fieldId?: string;
+  fieldName?: string;
   totalValue: number;
   status: 'draft' | 'sent' | 'confirmed' | 'received' | 'cancelled';
   requestedBy: string;
@@ -21,6 +27,7 @@ interface PurchaseOrder {
   expectedDeliveryDate?: Date;
   actualDeliveryDate?: Date;
   notes?: string;
+  items?: { name: string; quantity: number; unit: string; unitPrice: number }[];
 }
 
 const STATUS_CONFIG = {
@@ -31,40 +38,74 @@ const STATUS_CONFIG = {
   cancelled: { label: 'Cancelado', icon: XCircle, color: Colors.error },
 };
 
+// Mock data with season and field
+const mockOrders: PurchaseOrder[] = [
+  {
+    id: 'po-001',
+    supplierId: 'sup-1',
+    supplierName: 'Agropecuária Boa Vista',
+    operationId: 'op-1',
+    operationName: 'Cana',
+    seasonId: 'season-1',
+    seasonName: 'Safra 24/25',
+    fieldId: 'field-1',
+    fieldName: 'Talhão A - 150ha',
+    totalValue: 45000,
+    status: 'confirmed',
+    requestedBy: 'João Silva',
+    requestDate: new Date('2025-01-10'),
+    expectedDeliveryDate: new Date('2025-01-20'),
+    items: [
+      { name: 'Fertilizante NPK 10-10-10', quantity: 30, unit: 'ton', unitPrice: 1500 },
+    ]
+  },
+  {
+    id: 'po-002',
+    supplierId: 'sup-2',
+    supplierName: 'Nutripecuária Ltda',
+    operationId: 'op-2',
+    operationName: 'Confinamento',
+    seasonId: 'season-1',
+    seasonName: 'Safra 24/25',
+    fieldId: 'field-2',
+    fieldName: 'Curral Principal',
+    totalValue: 28000,
+    status: 'sent',
+    requestedBy: 'Maria Santos',
+    requestDate: new Date('2025-01-12'),
+    expectedDeliveryDate: new Date('2025-01-18'),
+    items: [
+      { name: 'Ração Bovina Engorda', quantity: 20, unit: 'ton', unitPrice: 1400 },
+    ]
+  },
+  {
+    id: 'po-003',
+    supplierId: 'sup-3',
+    supplierName: 'Defensivos Agrícolas SP',
+    operationId: 'op-1',
+    operationName: 'Cana',
+    seasonId: 'season-1',
+    seasonName: 'Safra 24/25',
+    fieldId: 'field-3',
+    fieldName: 'Talhão B - 80ha',
+    totalValue: 15000,
+    status: 'draft',
+    requestedBy: 'João Silva',
+    requestDate: new Date('2025-01-14'),
+    items: [
+      { name: 'Herbicida Glifosato', quantity: 100, unit: 'L', unitPrice: 150 },
+    ]
+  },
+];
+
 export default function PurchaseOrdersScreen() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<PurchaseOrder['status'] | 'all'>('all');
+  const [showNewOrderModal, setShowNewOrderModal] = useState(false);
 
-  const { data: purchaseOrders = [], isLoading } = useQuery<PurchaseOrder[]>({
-    queryKey: ['purchaseOrders'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('purchase_orders')
-        .select('*')
-        .order('request_date', { ascending: false });
-      
-      if (error) {
-        console.error('Error loading purchase orders:', error);
-        throw error;
-      }
-      
-      if (!data) return [];
-      
-      return data.map((po: any): PurchaseOrder => ({
-        id: po.id,
-        supplierId: po.supplier_id || '',
-        operationId: po.operation_id || '',
-        totalValue: po.total_value,
-        status: po.status as any,
-        requestedBy: po.requested_by,
-        approvedBy: po.approved_by,
-        requestDate: new Date(po.request_date),
-        expectedDeliveryDate: po.expected_delivery_date ? new Date(po.expected_delivery_date) : undefined,
-        actualDeliveryDate: po.actual_delivery_date ? new Date(po.actual_delivery_date) : undefined,
-        notes: po.notes,
-      }));
-    },
-  });
+  // Use mock data for now
+  const purchaseOrders = mockOrders;
+  const isLoading = false;
 
   const filteredOrders = purchaseOrders.filter(po => {
     if (statusFilter !== 'all' && po.status !== statusFilter) return false;
@@ -106,7 +147,7 @@ export default function PurchaseOrdersScreen() {
               <Text style={styles.title}>Pedidos de Compra</Text>
               <Text style={styles.subtitle}>{purchaseOrders.length} pedidos</Text>
             </View>
-            <TouchableOpacity style={styles.addButton} onPress={() => {}} activeOpacity={0.7}>
+            <TouchableOpacity style={styles.addButton} onPress={() => setShowNewOrderModal(true)} activeOpacity={0.7}>
               <Plus size={20} color={Colors.white} />
               <Text style={styles.addButtonText}>Novo Pedido</Text>
             </TouchableOpacity>
@@ -200,6 +241,37 @@ export default function PurchaseOrdersScreen() {
                     </View>
                   </View>
 
+                  {/* Supplier Info */}
+                  {order.supplierName && (
+                    <View style={styles.supplierRow}>
+                      <Text style={styles.supplierLabel}>Fornecedor:</Text>
+                      <Text style={styles.supplierName}>{order.supplierName}</Text>
+                    </View>
+                  )}
+
+                  {/* Season and Field Tags */}
+                  {(order.seasonName || order.fieldName) && (
+                    <View style={styles.tagsRow}>
+                      {order.seasonName && (
+                        <View style={[styles.tagBadge, { backgroundColor: Colors.success + '15' }]}>
+                          <Sprout size={12} color={Colors.success} />
+                          <Text style={[styles.tagText, { color: Colors.success }]}>{order.seasonName}</Text>
+                        </View>
+                      )}
+                      {order.fieldName && (
+                        <View style={[styles.tagBadge, { backgroundColor: Colors.info + '15' }]}>
+                          <MapPin size={12} color={Colors.info} />
+                          <Text style={[styles.tagText, { color: Colors.info }]}>{order.fieldName}</Text>
+                        </View>
+                      )}
+                      {order.operationName && (
+                        <View style={[styles.tagBadge, { backgroundColor: Colors.primary + '15' }]}>
+                          <Text style={[styles.tagText, { color: Colors.primary }]}>{order.operationName}</Text>
+                        </View>
+                      )}
+                    </View>
+                  )}
+
                   <View style={styles.orderDetails}>
                     <View style={styles.detailRow}>
                       <Text style={styles.detailLabel}>Valor Total</Text>
@@ -240,6 +312,101 @@ export default function PurchaseOrdersScreen() {
             <View style={{ height: 40 }} />
           </ScrollView>
         </View>
+
+        {/* New Order Modal */}
+        <Modal
+          visible={showNewOrderModal}
+          animationType="slide"
+          transparent
+          onRequestClose={() => setShowNewOrderModal(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <View style={styles.modalHeader}>
+                <View>
+                  <Text style={styles.modalTitle}>Novo Pedido de Compra</Text>
+                  <Text style={styles.modalSubtitle}>Preencha os dados do pedido</Text>
+                </View>
+                <TouchableOpacity
+                  style={styles.modalCloseButton}
+                  onPress={() => setShowNewOrderModal(false)}
+                >
+                  <X size={24} color={Colors.textSecondary} />
+                </TouchableOpacity>
+              </View>
+
+              <ScrollView style={styles.modalBody} showsVerticalScrollIndicator={false}>
+                <View style={styles.formGroup}>
+                  <Text style={styles.formLabel}>Fornecedor *</Text>
+                  <TouchableOpacity style={styles.formSelect} activeOpacity={0.7}>
+                    <Text style={styles.formSelectPlaceholder}>Selecione o fornecedor</Text>
+                    <ChevronRight size={20} color={Colors.textTertiary} />
+                  </TouchableOpacity>
+                </View>
+
+                <View style={styles.formGroup}>
+                  <Text style={styles.formLabel}>Safra *</Text>
+                  <TouchableOpacity style={styles.formSelect} activeOpacity={0.7}>
+                    <Text style={styles.formSelectPlaceholder}>Selecione a safra</Text>
+                    <ChevronRight size={20} color={Colors.textTertiary} />
+                  </TouchableOpacity>
+                </View>
+
+                <View style={styles.formGroup}>
+                  <Text style={styles.formLabel}>Talhão/Área</Text>
+                  <TouchableOpacity style={styles.formSelect} activeOpacity={0.7}>
+                    <Text style={styles.formSelectPlaceholder}>Selecione a área (opcional)</Text>
+                    <ChevronRight size={20} color={Colors.textTertiary} />
+                  </TouchableOpacity>
+                </View>
+
+                <View style={styles.formGroup}>
+                  <Text style={styles.formLabel}>Operação</Text>
+                  <TouchableOpacity style={styles.formSelect} activeOpacity={0.7}>
+                    <Text style={styles.formSelectPlaceholder}>Vincular a uma operação (opcional)</Text>
+                    <ChevronRight size={20} color={Colors.textTertiary} />
+                  </TouchableOpacity>
+                </View>
+
+                <View style={styles.formGroup}>
+                  <Text style={styles.formLabel}>Data Prevista de Entrega</Text>
+                  <TouchableOpacity style={styles.formSelect} activeOpacity={0.7}>
+                    <Text style={styles.formSelectPlaceholder}>Selecione a data</Text>
+                    <Calendar size={20} color={Colors.textTertiary} />
+                  </TouchableOpacity>
+                </View>
+
+                <View style={styles.formGroup}>
+                  <Text style={styles.formLabel}>Observações</Text>
+                  <TextInput
+                    style={[styles.formInput, { height: 100, textAlignVertical: 'top' }]}
+                    placeholder="Informações adicionais sobre o pedido"
+                    placeholderTextColor={Colors.textTertiary}
+                    multiline
+                    numberOfLines={4}
+                  />
+                </View>
+              </ScrollView>
+
+              <View style={styles.modalFooter}>
+                <TouchableOpacity
+                  style={styles.primaryButton}
+                  activeOpacity={0.7}
+                  onPress={() => setShowNewOrderModal(false)}
+                >
+                  <Text style={styles.primaryButtonText}>Adicionar Itens</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.secondaryButton}
+                  activeOpacity={0.7}
+                  onPress={() => setShowNewOrderModal(false)}
+                >
+                  <Text style={styles.secondaryButtonText}>Cancelar</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </SafeAreaView>
     </View>
   );
@@ -457,5 +624,143 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: Colors.textPrimary,
     lineHeight: 18,
+  },
+  supplierRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 12,
+  },
+  supplierLabel: {
+    fontSize: 13,
+    color: Colors.textSecondary,
+    fontWeight: '500' as const,
+  },
+  supplierName: {
+    fontSize: 14,
+    fontWeight: '600' as const,
+    color: Colors.textPrimary,
+  },
+  tagsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginBottom: 16,
+  },
+  tagBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  tagText: {
+    fontSize: 12,
+    fontWeight: '600' as const,
+  },
+  // Modal Styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: Colors.surface,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    maxHeight: '90%',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '700' as const,
+    color: Colors.textPrimary,
+  },
+  modalSubtitle: {
+    fontSize: 13,
+    color: Colors.textSecondary,
+    marginTop: 2,
+  },
+  modalCloseButton: {
+    padding: 8,
+  },
+  modalBody: {
+    padding: 20,
+  },
+  formGroup: {
+    marginBottom: 20,
+  },
+  formLabel: {
+    fontSize: 14,
+    fontWeight: '600' as const,
+    color: Colors.textPrimary,
+    marginBottom: 8,
+  },
+  formInput: {
+    backgroundColor: Colors.background,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    fontSize: 15,
+    color: Colors.textPrimary,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  formSelect: {
+    backgroundColor: Colors.background,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  formSelectText: {
+    fontSize: 15,
+    color: Colors.textPrimary,
+  },
+  formSelectPlaceholder: {
+    fontSize: 15,
+    color: Colors.textTertiary,
+  },
+  modalFooter: {
+    padding: 20,
+    borderTopWidth: 1,
+    borderTopColor: Colors.border,
+    gap: 12,
+  },
+  primaryButton: {
+    backgroundColor: Colors.primary,
+    borderRadius: 14,
+    paddingVertical: 16,
+    alignItems: 'center',
+  },
+  primaryButtonText: {
+    fontSize: 16,
+    fontWeight: '600' as const,
+    color: Colors.white,
+  },
+  secondaryButton: {
+    backgroundColor: Colors.background,
+    borderRadius: 14,
+    paddingVertical: 16,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  secondaryButtonText: {
+    fontSize: 16,
+    fontWeight: '600' as const,
+    color: Colors.textSecondary,
   },
 });

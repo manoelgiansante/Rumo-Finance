@@ -1,7 +1,7 @@
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Modal } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Stack } from "expo-router";
-import { TrendingUp, TrendingDown, Calendar } from "lucide-react-native";
+import { Stack, router } from "expo-router";
+import { TrendingUp, TrendingDown, Calendar, Upload, Download, FileText, CreditCard, Plus, FileSpreadsheet } from "lucide-react-native";
 import Colors from "@/constants/colors";
 import { useState } from "react";
 import { format } from "date-fns";
@@ -28,10 +28,17 @@ const mockCashFlow: CashFlowItem[] = [
 
 export default function CashFlowScreen() {
   const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month'>('month');
+  const [showImportModal, setShowImportModal] = useState(false);
   const currentBalance = 287500;
   const projectedInflows = mockCashFlow.filter(i => i.type === 'in' && i.status === 'projected').reduce((sum, i) => sum + i.value, 0);
   const projectedOutflows = mockCashFlow.filter(i => i.type === 'out' && i.status === 'projected').reduce((sum, i) => sum + i.value, 0);
   const projectedBalance = currentBalance + projectedInflows - projectedOutflows;
+
+  const handleImportData = (type: string) => {
+    setShowImportModal(false);
+    // Simular importação
+    alert(`Importação de ${type} iniciada!`);
+  };
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -46,6 +53,33 @@ export default function CashFlowScreen() {
       />
 
       <ScrollView showsVerticalScrollIndicator={false}>
+        {/* Action Buttons */}
+        <View style={styles.actionRow}>
+          <TouchableOpacity 
+            style={styles.actionButton}
+            onPress={() => setShowImportModal(true)}
+            activeOpacity={0.7}
+          >
+            <Upload size={18} color={Colors.primary} />
+            <Text style={styles.actionButtonText}>Importar</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.actionButton}
+            onPress={() => router.push('/bank-reconciliation')}
+            activeOpacity={0.7}
+          >
+            <CreditCard size={18} color={Colors.info} />
+            <Text style={styles.actionButtonText}>Conciliar OFX</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={[styles.actionButton, styles.actionButtonPrimary]}
+            activeOpacity={0.7}
+          >
+            <Plus size={18} color={Colors.white} />
+            <Text style={[styles.actionButtonText, { color: Colors.white }]}>Novo</Text>
+          </TouchableOpacity>
+        </View>
+
         <View style={styles.balanceCard}>
           <Text style={styles.balanceLabel}>Saldo Atual</Text>
           <Text style={styles.balanceValue}>R$ {currentBalance.toLocaleString('pt-BR')}</Text>
@@ -166,6 +200,95 @@ export default function CashFlowScreen() {
 
         <View style={{ height: 20 }} />
       </ScrollView>
+
+      {/* Import Modal */}
+      <Modal
+        visible={showImportModal}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowImportModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Importar Dados</Text>
+            <Text style={styles.modalDescription}>
+              Importe contas a pagar e receber de planilhas ou outros sistemas
+            </Text>
+
+            <TouchableOpacity 
+              style={styles.importOption}
+              onPress={() => handleImportData('Planilha Excel')}
+              activeOpacity={0.7}
+            >
+              <View style={[styles.importOptionIcon, { backgroundColor: Colors.success + '15' }]}>
+                <FileSpreadsheet size={24} color={Colors.success} />
+              </View>
+              <View style={styles.importOptionInfo}>
+                <Text style={styles.importOptionTitle}>Planilha Excel (XLS/XLSX)</Text>
+                <Text style={styles.importOptionDescription}>
+                  Importe contas a pagar e receber de planilhas
+                </Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={styles.importOption}
+              onPress={() => handleImportData('CSV')}
+              activeOpacity={0.7}
+            >
+              <View style={[styles.importOptionIcon, { backgroundColor: Colors.info + '15' }]}>
+                <FileText size={24} color={Colors.info} />
+              </View>
+              <View style={styles.importOptionInfo}>
+                <Text style={styles.importOptionTitle}>Arquivo CSV</Text>
+                <Text style={styles.importOptionDescription}>
+                  Formato simples compatível com diversos sistemas
+                </Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={styles.importOption}
+              onPress={() => router.push('/bank-reconciliation')}
+              activeOpacity={0.7}
+            >
+              <View style={[styles.importOptionIcon, { backgroundColor: Colors.primary + '15' }]}>
+                <CreditCard size={24} color={Colors.primary} />
+              </View>
+              <View style={styles.importOptionInfo}>
+                <Text style={styles.importOptionTitle}>Extrato Bancário (OFX)</Text>
+                <Text style={styles.importOptionDescription}>
+                  Importe e concilie extratos bancários automaticamente
+                </Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={styles.importOption}
+              onPress={() => handleImportData('Sistema Contábil')}
+              activeOpacity={0.7}
+            >
+              <View style={[styles.importOptionIcon, { backgroundColor: Colors.warning + '15' }]}>
+                <Download size={24} color={Colors.warning} />
+              </View>
+              <View style={styles.importOptionInfo}>
+                <Text style={styles.importOptionTitle}>Outro Sistema</Text>
+                <Text style={styles.importOptionDescription}>
+                  Importe de sistemas contábeis e ERPs
+                </Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={styles.modalCloseButton}
+              onPress={() => setShowImportModal(false)}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.modalCloseButtonText}>Cancelar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -174,6 +297,33 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
+  },
+  actionRow: {
+    flexDirection: 'row',
+    paddingHorizontal: 24,
+    gap: 10,
+    marginBottom: 16,
+  },
+  actionButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingVertical: 12,
+    backgroundColor: Colors.surface,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  actionButtonPrimary: {
+    backgroundColor: Colors.primary,
+    borderColor: Colors.primary,
+  },
+  actionButtonText: {
+    fontSize: 13,
+    fontWeight: '600' as const,
+    color: Colors.textPrimary,
   },
   balanceCard: {
     backgroundColor: Colors.primary,
@@ -372,5 +522,67 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700' as const,
     letterSpacing: -0.3,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: Colors.surface,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    padding: 24,
+    paddingBottom: 40,
+  },
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: '700' as const,
+    color: Colors.textPrimary,
+    marginBottom: 8,
+  },
+  modalDescription: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+    marginBottom: 24,
+  },
+  importOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    backgroundColor: Colors.background,
+    borderRadius: 14,
+    padding: 16,
+    marginBottom: 12,
+  },
+  importOptionIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  importOptionInfo: {
+    flex: 1,
+  },
+  importOptionTitle: {
+    fontSize: 16,
+    fontWeight: '600' as const,
+    color: Colors.textPrimary,
+    marginBottom: 4,
+  },
+  importOptionDescription: {
+    fontSize: 13,
+    color: Colors.textSecondary,
+  },
+  modalCloseButton: {
+    alignItems: 'center',
+    paddingVertical: 16,
+    marginTop: 8,
+  },
+  modalCloseButtonText: {
+    fontSize: 16,
+    fontWeight: '600' as const,
+    color: Colors.textSecondary,
   },
 });
