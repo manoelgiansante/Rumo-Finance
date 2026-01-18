@@ -1,0 +1,695 @@
+import { supabase } from './supabase';
+
+// =====================================================
+// API SERVICE - Rumo Finance
+// Serviço centralizado para todas as operações do banco
+// =====================================================
+
+// ==================== FARMS ====================
+export const FarmsAPI = {
+  async getAll() {
+    const { data, error } = await supabase
+      .from('farms')
+      .select('*')
+      .order('name');
+    
+    if (error) throw error;
+    return data || [];
+  },
+
+  async getById(id: string) {
+    const { data, error } = await supabase
+      .from('farms')
+      .select('*')
+      .eq('id', id)
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async create(farm: {
+    name: string;
+    location?: string;
+    size?: number;
+    active?: boolean;
+  }) {
+    const { data, error } = await supabase
+      .from('farms')
+      .insert(farm)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async update(id: string, updates: Partial<{
+    name: string;
+    location: string;
+    size: number;
+    active: boolean;
+  }>) {
+    const { data, error } = await supabase
+      .from('farms')
+      .update({ ...updates, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async delete(id: string) {
+    const { error } = await supabase
+      .from('farms')
+      .update({ active: false })
+      .eq('id', id);
+    
+    if (error) throw error;
+  },
+};
+
+// ==================== EXPENSES ====================
+export const ExpensesAPI = {
+  async getAll(filters?: {
+    status?: string;
+    category?: string;
+    farmId?: string;
+    startDate?: Date;
+    endDate?: Date;
+  }) {
+    let query = supabase
+      .from('expenses')
+      .select(`
+        *,
+        supplier:suppliers(id, name),
+        operation:operations(id, name)
+      `)
+      .order('date', { ascending: false });
+
+    if (filters?.status) query = query.eq('status', filters.status);
+    if (filters?.category) query = query.eq('category', filters.category);
+    if (filters?.farmId) query = query.eq('farm_id', filters.farmId);
+    if (filters?.startDate) query = query.gte('date', filters.startDate.toISOString());
+    if (filters?.endDate) query = query.lte('date', filters.endDate.toISOString());
+
+    const { data, error } = await query;
+    if (error) throw error;
+    return data || [];
+  },
+
+  async getById(id: string) {
+    const { data, error } = await supabase
+      .from('expenses')
+      .select(`
+        *,
+        supplier:suppliers(*),
+        operation:operations(*)
+      `)
+      .eq('id', id)
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async create(expense: {
+    description: string;
+    date: string;
+    due_date?: string;
+    category?: string;
+    subcategory?: string;
+    supplier_id?: string;
+    operation_id?: string;
+    farm_id?: string;
+    agreed_value?: number;
+    invoice_value?: number;
+    actual_value?: number;
+    payment_method?: string;
+    status?: string;
+    notes?: string;
+  }) {
+    const { data, error } = await supabase
+      .from('expenses')
+      .insert({
+        ...expense,
+        status: expense.status || 'pending',
+      })
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async update(id: string, updates: Partial<{
+    description: string;
+    date: string;
+    due_date: string;
+    category: string;
+    subcategory: string;
+    supplier_id: string;
+    operation_id: string;
+    agreed_value: number;
+    invoice_value: number;
+    actual_value: number;
+    payment_method: string;
+    status: string;
+    notes: string;
+  }>) {
+    const { data, error } = await supabase
+      .from('expenses')
+      .update({ ...updates, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async delete(id: string) {
+    const { error } = await supabase
+      .from('expenses')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw error;
+  },
+
+  async approve(id: string, approvedBy: string) {
+    return this.update(id, {
+      status: 'approved',
+      // approved_by: approvedBy,
+      // approved_at: new Date().toISOString(),
+    } as any);
+  },
+
+  async markAsPaid(id: string, paidBy: string, actualValue?: number) {
+    return this.update(id, {
+      status: 'paid',
+      actual_value: actualValue,
+      // paid_by: paidBy,
+      // paid_at: new Date().toISOString(),
+    } as any);
+  },
+};
+
+// ==================== REVENUES ====================
+export const RevenuesAPI = {
+  async getAll(filters?: {
+    status?: string;
+    category?: string;
+    clientId?: string;
+    farmId?: string;
+    startDate?: Date;
+    endDate?: Date;
+  }) {
+    let query = supabase
+      .from('revenues')
+      .select(`
+        *,
+        client:clients(id, name)
+      `)
+      .order('date', { ascending: false });
+
+    if (filters?.status) query = query.eq('status', filters.status);
+    if (filters?.category) query = query.eq('category', filters.category);
+    if (filters?.clientId) query = query.eq('client_id', filters.clientId);
+    if (filters?.farmId) query = query.eq('farm_id', filters.farmId);
+    if (filters?.startDate) query = query.gte('date', filters.startDate.toISOString());
+    if (filters?.endDate) query = query.lte('date', filters.endDate.toISOString());
+
+    const { data, error } = await query;
+    if (error) throw error;
+    return data || [];
+  },
+
+  async create(revenue: {
+    description: string;
+    date: string;
+    category?: string;
+    client_id?: string;
+    farm_id?: string;
+    value: number;
+    status?: string;
+    notes?: string;
+  }) {
+    const { data, error } = await supabase
+      .from('revenues')
+      .insert({
+        ...revenue,
+        status: revenue.status || 'pending',
+      })
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async update(id: string, updates: Partial<{
+    description: string;
+    date: string;
+    category: string;
+    client_id: string;
+    value: number;
+    status: string;
+    notes: string;
+  }>) {
+    const { data, error } = await supabase
+      .from('revenues')
+      .update({ ...updates, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async delete(id: string) {
+    const { error } = await supabase
+      .from('revenues')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw error;
+  },
+
+  async markAsReceived(id: string) {
+    return this.update(id, { status: 'received' });
+  },
+};
+
+// ==================== CLIENTS ====================
+export const ClientsAPI = {
+  async getAll() {
+    const { data, error } = await supabase
+      .from('clients')
+      .select('*')
+      .eq('active', true)
+      .order('name');
+    
+    if (error) throw error;
+    return data || [];
+  },
+
+  async create(client: {
+    name: string;
+    document?: string;
+    email?: string;
+    phone?: string;
+    address?: string;
+  }) {
+    const { data, error } = await supabase
+      .from('clients')
+      .insert({ ...client, active: true })
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async update(id: string, updates: Partial<{
+    name: string;
+    document: string;
+    email: string;
+    phone: string;
+    address: string;
+  }>) {
+    const { data, error } = await supabase
+      .from('clients')
+      .update({ ...updates, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async delete(id: string) {
+    const { error } = await supabase
+      .from('clients')
+      .update({ active: false })
+      .eq('id', id);
+    
+    if (error) throw error;
+  },
+};
+
+// ==================== SUPPLIERS ====================
+export const SuppliersAPI = {
+  async getAll() {
+    const { data, error } = await supabase
+      .from('suppliers')
+      .select('*')
+      .eq('active', true)
+      .order('name');
+    
+    if (error) throw error;
+    return data || [];
+  },
+
+  async create(supplier: {
+    name: string;
+    document?: string;
+    email?: string;
+    phone?: string;
+    category?: string;
+  }) {
+    const { data, error } = await supabase
+      .from('suppliers')
+      .insert({ ...supplier, active: true })
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async update(id: string, updates: Partial<{
+    name: string;
+    document: string;
+    email: string;
+    phone: string;
+    category: string;
+  }>) {
+    const { data, error } = await supabase
+      .from('suppliers')
+      .update({ ...updates, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async delete(id: string) {
+    const { error } = await supabase
+      .from('suppliers')
+      .update({ active: false })
+      .eq('id', id);
+    
+    if (error) throw error;
+  },
+};
+
+// ==================== CONTRACTS ====================
+export const ContractsAPI = {
+  async getAll() {
+    const { data, error } = await supabase
+      .from('contracts')
+      .select(`
+        *,
+        client:clients(id, name)
+      `)
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    return data || [];
+  },
+
+  async create(contract: {
+    client_id: string;
+    product: string;
+    quantity: number;
+    unit_price: number;
+    total_value: number;
+    start_date: string;
+    end_date?: string;
+    status?: string;
+    notes?: string;
+  }) {
+    const { data, error } = await supabase
+      .from('contracts')
+      .insert({
+        ...contract,
+        status: contract.status || 'active',
+      })
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async update(id: string, updates: Partial<{
+    product: string;
+    quantity: number;
+    unit_price: number;
+    total_value: number;
+    end_date: string;
+    status: string;
+    notes: string;
+  }>) {
+    const { data, error } = await supabase
+      .from('contracts')
+      .update({ ...updates, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+};
+
+// ==================== BANK ACCOUNTS ====================
+export const BankAccountsAPI = {
+  async getAll() {
+    const { data, error } = await supabase
+      .from('bank_accounts')
+      .select('*')
+      .eq('active', true)
+      .order('name');
+    
+    if (error) throw error;
+    return data || [];
+  },
+
+  async create(account: {
+    name: string;
+    bank_name?: string;
+    account_number?: string;
+    agency?: string;
+    initial_balance?: number;
+    current_balance?: number;
+  }) {
+    const { data, error } = await supabase
+      .from('bank_accounts')
+      .insert({
+        ...account,
+        current_balance: account.initial_balance || 0,
+        active: true,
+      })
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async updateBalance(id: string, newBalance: number) {
+    const { data, error } = await supabase
+      .from('bank_accounts')
+      .update({ 
+        current_balance: newBalance,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+};
+
+// ==================== OPERATIONS ====================
+export const OperationsAPI = {
+  async getAll() {
+    const { data, error } = await supabase
+      .from('operations')
+      .select('*')
+      .order('name');
+    
+    if (error) throw error;
+    return data || [];
+  },
+
+  async create(operation: {
+    name: string;
+    type?: string;
+    color?: string;
+    icon?: string;
+    budget?: number;
+  }) {
+    const { data, error } = await supabase
+      .from('operations')
+      .insert(operation)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async update(id: string, updates: Partial<{
+    name: string;
+    type: string;
+    color: string;
+    icon: string;
+    budget: number;
+    spent: number;
+  }>) {
+    const { data, error } = await supabase
+      .from('operations')
+      .update({ ...updates, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+};
+
+// ==================== REPORTS ====================
+export const ReportsAPI = {
+  async getExpensesByCategory(startDate?: Date, endDate?: Date) {
+    let query = supabase
+      .from('expenses')
+      .select('category, actual_value, invoice_value, agreed_value');
+
+    if (startDate) query = query.gte('date', startDate.toISOString());
+    if (endDate) query = query.lte('date', endDate.toISOString());
+
+    const { data, error } = await query;
+    if (error) throw error;
+
+    const grouped = (data || []).reduce((acc, e) => {
+      const cat = e.category || 'Outros';
+      const value = e.actual_value || e.invoice_value || e.agreed_value || 0;
+      acc[cat] = (acc[cat] || 0) + value;
+      return acc;
+    }, {} as Record<string, number>);
+
+    return Object.entries(grouped).map(([category, total]) => ({
+      category,
+      total,
+    }));
+  },
+
+  async getRevenuesByCategory(startDate?: Date, endDate?: Date) {
+    let query = supabase
+      .from('revenues')
+      .select('category, value');
+
+    if (startDate) query = query.gte('date', startDate.toISOString());
+    if (endDate) query = query.lte('date', endDate.toISOString());
+
+    const { data, error } = await query;
+    if (error) throw error;
+
+    const grouped = (data || []).reduce((acc, r) => {
+      const cat = r.category || 'Outros';
+      acc[cat] = (acc[cat] || 0) + (r.value || 0);
+      return acc;
+    }, {} as Record<string, number>);
+
+    return Object.entries(grouped).map(([category, total]) => ({
+      category,
+      total,
+    }));
+  },
+
+  async getCashFlow(months: number = 6) {
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - months);
+
+    const [expenses, revenues] = await Promise.all([
+      supabase
+        .from('expenses')
+        .select('date, actual_value, invoice_value, agreed_value')
+        .gte('date', startDate.toISOString()),
+      supabase
+        .from('revenues')
+        .select('date, value')
+        .gte('date', startDate.toISOString()),
+    ]);
+
+    const monthlyData: Record<string, { expenses: number; revenues: number }> = {};
+
+    (expenses.data || []).forEach(e => {
+      const month = new Date(e.date).toISOString().slice(0, 7);
+      if (!monthlyData[month]) monthlyData[month] = { expenses: 0, revenues: 0 };
+      monthlyData[month].expenses += e.actual_value || e.invoice_value || e.agreed_value || 0;
+    });
+
+    (revenues.data || []).forEach(r => {
+      const month = new Date(r.date).toISOString().slice(0, 7);
+      if (!monthlyData[month]) monthlyData[month] = { expenses: 0, revenues: 0 };
+      monthlyData[month].revenues += r.value || 0;
+    });
+
+    return Object.entries(monthlyData)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([month, data]) => ({
+        month,
+        expenses: data.expenses,
+        revenues: data.revenues,
+        balance: data.revenues - data.expenses,
+      }));
+  },
+
+  async getDashboardSummary() {
+    const [expenses, revenues, pendingExpenses, pendingRevenues] = await Promise.all([
+      supabase.from('expenses').select('actual_value, invoice_value, agreed_value'),
+      supabase.from('revenues').select('value'),
+      supabase.from('expenses').select('actual_value, invoice_value, agreed_value').eq('status', 'pending'),
+      supabase.from('revenues').select('value').eq('status', 'pending'),
+    ]);
+
+    const totalExpenses = (expenses.data || []).reduce(
+      (sum, e) => sum + (e.actual_value || e.invoice_value || e.agreed_value || 0), 0
+    );
+    const totalRevenues = (revenues.data || []).reduce(
+      (sum, r) => sum + (r.value || 0), 0
+    );
+    const totalPendingExpenses = (pendingExpenses.data || []).reduce(
+      (sum, e) => sum + (e.actual_value || e.invoice_value || e.agreed_value || 0), 0
+    );
+    const totalPendingRevenues = (pendingRevenues.data || []).reduce(
+      (sum, r) => sum + (r.value || 0), 0
+    );
+
+    return {
+      totalExpenses,
+      totalRevenues,
+      totalPendingExpenses,
+      totalPendingRevenues,
+      balance: totalRevenues - totalExpenses,
+      expensesCount: expenses.data?.length || 0,
+      revenuesCount: revenues.data?.length || 0,
+    };
+  },
+};
+
+// ==================== EXPORT ALL ====================
+export default {
+  farms: FarmsAPI,
+  expenses: ExpensesAPI,
+  revenues: RevenuesAPI,
+  clients: ClientsAPI,
+  suppliers: SuppliersAPI,
+  contracts: ContractsAPI,
+  bankAccounts: BankAccountsAPI,
+  operations: OperationsAPI,
+  reports: ReportsAPI,
+};

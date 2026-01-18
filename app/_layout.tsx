@@ -5,6 +5,7 @@ import React, { useEffect } from "react";
 import { View, Platform } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { AppProvider } from "@/providers/AppProvider";
+import { AuthProvider } from "@/contexts/AuthContext";
 import WebSidebar from "@/components/WebSidebar";
 
 SplashScreen.preventAutoHideAsync();
@@ -102,11 +103,13 @@ export default function RootLayout() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AppProvider>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <RootLayoutNav />
-        </GestureHandlerRootView>
-      </AppProvider>
+      <AuthProvider>
+        <AppProvider>
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <RootLayoutNav />
+          </GestureHandlerRootView>
+        </AppProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
