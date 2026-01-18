@@ -5,29 +5,29 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "rork-app",
+    "scheme": "rumo-finance",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/images/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#2E7D32"
     },
     "ios": {
-      "supportsTablet": false,
-      "bundleIdentifier": "app.rork.agrofinance-gestao-rural",
+      "supportsTablet": true,
+      "bundleIdentifier": "com.rumo.finance",
       "infoPlist": {
-        "NSPhotoLibraryUsageDescription": "Allow $(PRODUCT_NAME) to access your photos",
-        "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to access your camera",
-        "NSMicrophoneUsageDescription": "Allow $(PRODUCT_NAME) to access your microphone"
+        "NSPhotoLibraryUsageDescription": "Permite que o Rumo Finance acesse suas fotos para anexar comprovantes",
+        "NSCameraUsageDescription": "Permite que o Rumo Finance use a câmera para escanear documentos",
+        "NSMicrophoneUsageDescription": "Permite que o Rumo Finance use o microfone"
       }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#2E7D32"
       },
-      "package": "app.rork.agrofinance_gestao_rural",
+      "package": "com.rumo.finance",
       "permissions": [
         "CAMERA",
         "READ_EXTERNAL_STORAGE",

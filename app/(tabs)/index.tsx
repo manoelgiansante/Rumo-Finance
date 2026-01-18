@@ -6,13 +6,43 @@ import {
   Calendar, FileText, Package
 } from "lucide-react-native";
 import { useApp } from "@/providers/AppProvider";
+import { useAuth } from "@/contexts/AuthContext";
 import Colors from "@/constants/colors";
 import { router } from "expo-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { SubscriptionBanner } from "@/components/SubscriptionBanner";
+import OnboardingTutorial from "@/components/OnboardingTutorial";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function DashboardScreen() {
   const { expenses } = useApp();
+  const { isPremium } = useAuth();
   const [selectedPeriod, setSelectedPeriod] = useState<'month' | 'quarter' | 'year'>('month');
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  useEffect(() => {
+    checkOnboarding();
+  }, []);
+
+  const checkOnboarding = async () => {
+    try {
+      const seen = await AsyncStorage.getItem('@rumo_finance_onboarding_seen');
+      if (!seen) {
+        setShowOnboarding(true);
+      }
+    } catch (err) {
+      console.error('Error checking onboarding:', err);
+    }
+  };
+
+  const handleOnboardingComplete = async () => {
+    try {
+      await AsyncStorage.setItem('@rumo_finance_onboarding_seen', 'true');
+      setShowOnboarding(false);
+    } catch (err) {
+      console.error('Error saving onboarding state:', err);
+    }
+  };
 
   const stats = {
     cashBalance: 487500,
@@ -36,8 +66,22 @@ export default function DashboardScreen() {
 
   return (
     <View style={styles.container}>
+      {/* Onboarding Modal */}
+      <OnboardingTutorial 
+        visible={showOnboarding} 
+        onComplete={handleOnboardingComplete} 
+      />
+
       <SafeAreaView style={styles.safeArea} edges={isWeb ? [] : ['top']}>
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+          {/* Subscription Banner */}
+          {!isPremium && (
+            <SubscriptionBanner 
+              compact 
+              onSubscribe={() => router.push('/subscription')} 
+            />
+          )}
+
           <View style={styles.header}>
             <View>
               <Text style={styles.greeting}>Dashboard Financeiro</Text>

@@ -22,6 +22,8 @@ function RootLayoutNav() {
         <View style={{ flex: 1 }}>
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="login" />
+            <Stack.Screen name="subscription" />
             <Stack.Screen name="expense-details" />
             <Stack.Screen name="add-expense" />
             <Stack.Screen name="stock" />
@@ -42,6 +44,22 @@ function RootLayoutNav() {
   return (
     <Stack screenOptions={{ headerBackTitle: "Voltar" }}>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen 
+        name="login" 
+        options={{ 
+          title: "Login",
+          headerShown: false,
+          presentation: "modal"
+        }} 
+      />
+      <Stack.Screen 
+        name="subscription" 
+        options={{ 
+          title: "Assinatura",
+          headerShown: false,
+          presentation: "modal"
+        }} 
+      />
       <Stack.Screen 
         name="expense-details" 
         options={{ 
