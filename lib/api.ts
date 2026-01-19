@@ -954,6 +954,210 @@ export const FieldNotebookAPI = {
   },
 };
 
+// ==================== MACHINES ====================
+export const MachinesAPI = {
+  async getAll() {
+    const { data, error } = await supabase
+      .from('machines')
+      .select('*')
+      .order('name');
+    
+    if (error) throw error;
+    return data || [];
+  },
+
+  async getById(id: string) {
+    const { data, error } = await supabase
+      .from('machines')
+      .select('*')
+      .eq('id', id)
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async create(machine: {
+    name: string;
+    type?: string;
+    brand?: string;
+    model?: string;
+    year?: number;
+    hour_meter?: number;
+    status?: string;
+    fuel_consumption?: number;
+    operational_cost?: number;
+    farm_id?: string;
+    notes?: string;
+  }) {
+    const { data, error } = await supabase
+      .from('machines')
+      .insert(machine)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async update(id: string, updates: any) {
+    const { data, error } = await supabase
+      .from('machines')
+      .update({ ...updates, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async delete(id: string) {
+    const { error } = await supabase
+      .from('machines')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw error;
+  },
+
+  async getStatistics() {
+    const { data: machines } = await supabase
+      .from('machines')
+      .select('*');
+    
+    const { data: operations } = await supabase
+      .from('machine_operations')
+      .select('*');
+    
+    const { data: maintenance } = await supabase
+      .from('machine_maintenance')
+      .select('*');
+
+    const totalMachines = machines?.length || 0;
+    const activeMachines = machines?.filter(m => m.status === 'active').length || 0;
+    const totalHours = operations?.reduce((acc, op) => acc + (op.hours_worked || 0), 0) || 0;
+    const totalMaintenanceCost = maintenance?.reduce((acc, m) => acc + (m.cost || 0), 0) || 0;
+    const totalFuelUsed = operations?.reduce((acc, op) => acc + (op.fuel_used || 0), 0) || 0;
+    const totalAreaCovered = operations?.reduce((acc, op) => acc + (op.area_covered || 0), 0) || 0;
+
+    return {
+      totalMachines,
+      activeMachines,
+      inMaintenanceMachines: machines?.filter(m => m.status === 'maintenance').length || 0,
+      totalHours,
+      totalMaintenanceCost,
+      totalFuelUsed,
+      totalAreaCovered,
+    };
+  },
+};
+
+// ==================== MACHINE OPERATIONS ====================
+export const MachineOperationsAPI = {
+  async getAll(machineId?: string) {
+    let query = supabase
+      .from('machine_operations')
+      .select('*')
+      .order('start_time', { ascending: false });
+    
+    if (machineId) query = query.eq('machine_id', machineId);
+
+    const { data, error } = await query;
+    if (error) throw error;
+    return data || [];
+  },
+
+  async create(operation: {
+    machine_id: string;
+    machine_name?: string;
+    operation_type: string;
+    start_time: string;
+    end_time?: string;
+    hours_worked?: number;
+    fuel_used?: number;
+    area_covered?: number;
+    operator_name?: string;
+    farm_id?: string;
+    sector?: string;
+    notes?: string;
+  }) {
+    const { data, error } = await supabase
+      .from('machine_operations')
+      .insert(operation)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async getRecentByMachine(machineId: string, limit = 10) {
+    const { data, error } = await supabase
+      .from('machine_operations')
+      .select('*')
+      .eq('machine_id', machineId)
+      .order('start_time', { ascending: false })
+      .limit(limit);
+    
+    if (error) throw error;
+    return data || [];
+  },
+};
+
+// ==================== MACHINE MAINTENANCE ====================
+export const MachineMaintenanceAPI = {
+  async getAll(machineId?: string) {
+    let query = supabase
+      .from('machine_maintenance')
+      .select('*')
+      .order('date', { ascending: false });
+    
+    if (machineId) query = query.eq('machine_id', machineId);
+
+    const { data, error } = await query;
+    if (error) throw error;
+    return data || [];
+  },
+
+  async create(maintenance: {
+    machine_id: string;
+    machine_name?: string;
+    maintenance_type: string;
+    description: string;
+    date: string;
+    cost?: number;
+    parts_replaced?: string[];
+    technician?: string;
+    next_maintenance_date?: string;
+    next_maintenance_hours?: number;
+  }) {
+    const { data, error } = await supabase
+      .from('machine_maintenance')
+      .insert(maintenance)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async getUpcoming(days = 30) {
+    const futureDate = new Date();
+    futureDate.setDate(futureDate.getDate() + days);
+    
+    const { data, error } = await supabase
+      .from('machine_maintenance')
+      .select('*')
+      .gte('next_maintenance_date', new Date().toISOString())
+      .lte('next_maintenance_date', futureDate.toISOString())
+      .order('next_maintenance_date');
+    
+    if (error) throw error;
+    return data || [];
+  },
+};
+
 // ==================== SIMPLE API WRAPPER ====================
 // For simpler imports in screens
 export const api = {
@@ -1008,6 +1212,23 @@ export const api = {
   updateFieldNotebookEntry: (id: string, data: any) => FieldNotebookAPI.update(id, data),
   deleteFieldNotebookEntry: (id: string) => FieldNotebookAPI.delete(id),
 
+  // Machines (Máquinas)
+  getMachines: () => MachinesAPI.getAll(),
+  getMachine: (id: string) => MachinesAPI.getById(id),
+  createMachine: (data: any) => MachinesAPI.create(data),
+  updateMachine: (id: string, data: any) => MachinesAPI.update(id, data),
+  deleteMachine: (id: string) => MachinesAPI.delete(id),
+  getMachineStatistics: () => MachinesAPI.getStatistics(),
+
+  // Machine Operations
+  getMachineOperations: (machineId?: string) => MachineOperationsAPI.getAll(machineId),
+  createMachineOperation: (data: any) => MachineOperationsAPI.create(data),
+
+  // Machine Maintenance
+  getMachineMaintenance: (machineId?: string) => MachineMaintenanceAPI.getAll(machineId),
+  createMachineMaintenance: (data: any) => MachineMaintenanceAPI.create(data),
+  getUpcomingMaintenance: (days?: number) => MachineMaintenanceAPI.getUpcoming(days),
+
   // Reports
   getDashboardSummary: () => ReportsAPI.getDashboardSummary(),
   getCashFlow: (months?: number) => ReportsAPI.getCashFlow(months),
@@ -1031,4 +1252,7 @@ export default {
   budgets: BudgetsAPI,
   closingPeriods: ClosingPeriodsAPI,
   fieldNotebook: FieldNotebookAPI,
+  machines: MachinesAPI,
+  machineOperations: MachineOperationsAPI,
+  machineMaintenance: MachineMaintenanceAPI,
 };
