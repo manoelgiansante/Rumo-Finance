@@ -898,6 +898,62 @@ export const ClosingPeriodsAPI = {
   },
 };
 
+// ==================== FIELD NOTEBOOK ====================
+export const FieldNotebookAPI = {
+  async getAll() {
+    const { data, error } = await supabase
+      .from('field_notebook')
+      .select('*')
+      .order('date', { ascending: false });
+    
+    if (error) throw error;
+    return data || [];
+  },
+
+  async create(entry: {
+    date: string;
+    farm_id?: string;
+    farm_name?: string;
+    sector?: string;
+    activity_type: string;
+    description: string;
+    weather?: any;
+    observations?: string;
+    photos?: string[];
+    location?: any;
+  }) {
+    const { data, error } = await supabase
+      .from('field_notebook')
+      .insert(entry)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async update(id: string, updates: any) {
+    const { data, error } = await supabase
+      .from('field_notebook')
+      .update({ ...updates, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async delete(id: string) {
+    const { error } = await supabase
+      .from('field_notebook')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw error;
+  },
+};
+
 // ==================== SIMPLE API WRAPPER ====================
 // For simpler imports in screens
 export const api = {
@@ -946,6 +1002,12 @@ export const api = {
   closePeriod: (id: string) => ClosingPeriodsAPI.close(id),
   reopenPeriod: (id: string) => ClosingPeriodsAPI.reopen(id),
 
+  // Field Notebook (Caderno de Campo)
+  getFieldNotebookEntries: () => FieldNotebookAPI.getAll(),
+  createFieldNotebookEntry: (data: any) => FieldNotebookAPI.create(data),
+  updateFieldNotebookEntry: (id: string, data: any) => FieldNotebookAPI.update(id, data),
+  deleteFieldNotebookEntry: (id: string) => FieldNotebookAPI.delete(id),
+
   // Reports
   getDashboardSummary: () => ReportsAPI.getDashboardSummary(),
   getCashFlow: (months?: number) => ReportsAPI.getCashFlow(months),
@@ -968,4 +1030,5 @@ export default {
   forecasts: ForecastsAPI,
   budgets: BudgetsAPI,
   closingPeriods: ClosingPeriodsAPI,
+  fieldNotebook: FieldNotebookAPI,
 };

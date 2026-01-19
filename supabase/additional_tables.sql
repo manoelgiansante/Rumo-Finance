@@ -62,14 +62,33 @@ CREATE TABLE IF NOT EXISTS closing_periods (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
+-- 5. FIELD_NOTEBOOK (Caderno de Campo)
+CREATE TABLE IF NOT EXISTS field_notebook (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  date DATE NOT NULL,
+  farm_id UUID,
+  farm_name VARCHAR(255),
+  sector VARCHAR(100),
+  activity_type VARCHAR(50) NOT NULL,
+  description TEXT NOT NULL,
+  weather JSONB,
+  observations TEXT,
+  photos TEXT[],
+  location JSONB,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
 -- Enable Row Level Security
 ALTER TABLE assets ENABLE ROW LEVEL SECURITY;
 ALTER TABLE forecasts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE budgets ENABLE ROW LEVEL SECURITY;
 ALTER TABLE closing_periods ENABLE ROW LEVEL SECURITY;
+ALTER TABLE field_notebook ENABLE ROW LEVEL SECURITY;
 
 -- Policies para acesso público (development)
 CREATE POLICY "Enable all access for assets" ON assets FOR ALL USING (true);
 CREATE POLICY "Enable all access for forecasts" ON forecasts FOR ALL USING (true);
 CREATE POLICY "Enable all access for budgets" ON budgets FOR ALL USING (true);
 CREATE POLICY "Enable all access for closing_periods" ON closing_periods FOR ALL USING (true);
+CREATE POLICY "Enable all access for field_notebook" ON field_notebook FOR ALL USING (true);
