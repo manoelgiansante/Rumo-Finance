@@ -681,6 +681,278 @@ export const ReportsAPI = {
   },
 };
 
+// ==================== ASSETS ====================
+export const AssetsAPI = {
+  async getAll() {
+    const { data, error } = await supabase
+      .from('assets')
+      .select('*')
+      .order('name');
+    
+    if (error) throw error;
+    return data || [];
+  },
+
+  async getById(id: string) {
+    const { data, error } = await supabase
+      .from('assets')
+      .select('*')
+      .eq('id', id)
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async create(asset: {
+    name: string;
+    category: string;
+    purchase_date: string;
+    purchase_value: number;
+    current_value: number;
+    depreciation_rate: number;
+    farm_id?: string;
+    notes?: string;
+  }) {
+    const { data, error } = await supabase
+      .from('assets')
+      .insert(asset)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async update(id: string, updates: any) {
+    const { data, error } = await supabase
+      .from('assets')
+      .update({ ...updates, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async delete(id: string) {
+    const { error } = await supabase
+      .from('assets')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw error;
+  },
+};
+
+// ==================== FORECASTS ====================
+export const ForecastsAPI = {
+  async getAll() {
+    const { data, error } = await supabase
+      .from('forecasts')
+      .select('*')
+      .order('year', { ascending: false })
+      .order('month', { ascending: false });
+    
+    if (error) throw error;
+    return data || [];
+  },
+
+  async create(forecast: {
+    type: string;
+    category: string;
+    description: string;
+    amount: number;
+    month: number;
+    year: number;
+    probability: number;
+    notes?: string;
+  }) {
+    const { data, error } = await supabase
+      .from('forecasts')
+      .insert(forecast)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async update(id: string, updates: any) {
+    const { data, error } = await supabase
+      .from('forecasts')
+      .update({ ...updates, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async delete(id: string) {
+    const { error } = await supabase
+      .from('forecasts')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw error;
+  },
+};
+
+// ==================== BUDGETS ====================
+export const BudgetsAPI = {
+  async getAll() {
+    const { data, error } = await supabase
+      .from('budgets')
+      .select('*')
+      .order('year', { ascending: false })
+      .order('month', { ascending: false });
+    
+    if (error) throw error;
+    return data || [];
+  },
+
+  async create(budget: {
+    category: string;
+    planned_amount: number;
+    actual_amount: number;
+    month: number;
+    year: number;
+    type: string;
+  }) {
+    const { data, error } = await supabase
+      .from('budgets')
+      .insert(budget)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async update(id: string, updates: any) {
+    const { data, error } = await supabase
+      .from('budgets')
+      .update({ ...updates, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async delete(id: string) {
+    const { error } = await supabase
+      .from('budgets')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw error;
+  },
+};
+
+// ==================== CLOSING PERIODS ====================
+export const ClosingPeriodsAPI = {
+  async getByYear(year: number) {
+    const { data, error } = await supabase
+      .from('closing_periods')
+      .select('*')
+      .eq('year', year)
+      .order('month');
+    
+    if (error) throw error;
+    return data || [];
+  },
+
+  async close(id: string) {
+    const { data, error } = await supabase
+      .from('closing_periods')
+      .update({
+        status: 'closed',
+        closed_at: new Date().toISOString(),
+      })
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async reopen(id: string) {
+    const { data, error } = await supabase
+      .from('closing_periods')
+      .update({
+        status: 'open',
+        closed_at: null,
+      })
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+};
+
+// ==================== SIMPLE API WRAPPER ====================
+// For simpler imports in screens
+export const api = {
+  // Farms
+  getFarms: () => FarmsAPI.getAll(),
+  getFarm: (id: string) => FarmsAPI.getById(id),
+  createFarm: (data: any) => FarmsAPI.create(data),
+  updateFarm: (id: string, data: any) => FarmsAPI.update(id, data),
+  deleteFarm: (id: string) => FarmsAPI.delete(id),
+
+  // Expenses
+  getExpenses: (filters?: any) => ExpensesAPI.getAll(filters),
+  getExpense: (id: string) => ExpensesAPI.getById(id),
+  createExpense: (data: any) => ExpensesAPI.create(data),
+  updateExpense: (id: string, data: any) => ExpensesAPI.update(id, data),
+  deleteExpense: (id: string) => ExpensesAPI.delete(id),
+
+  // Revenues
+  getRevenues: (filters?: any) => RevenuesAPI.getAll(filters),
+  getRevenue: (id: string) => RevenuesAPI.getById(id),
+  createRevenue: (data: any) => RevenuesAPI.create(data),
+  updateRevenue: (id: string, data: any) => RevenuesAPI.update(id, data),
+  deleteRevenue: (id: string) => RevenuesAPI.delete(id),
+
+  // Assets
+  getAssets: () => AssetsAPI.getAll(),
+  getAsset: (id: string) => AssetsAPI.getById(id),
+  createAsset: (data: any) => AssetsAPI.create(data),
+  updateAsset: (id: string, data: any) => AssetsAPI.update(id, data),
+  deleteAsset: (id: string) => AssetsAPI.delete(id),
+
+  // Forecasts
+  getForecasts: () => ForecastsAPI.getAll(),
+  createForecast: (data: any) => ForecastsAPI.create(data),
+  updateForecast: (id: string, data: any) => ForecastsAPI.update(id, data),
+  deleteForecast: (id: string) => ForecastsAPI.delete(id),
+
+  // Budgets
+  getBudgets: () => BudgetsAPI.getAll(),
+  createBudget: (data: any) => BudgetsAPI.create(data),
+  updateBudget: (id: string, data: any) => BudgetsAPI.update(id, data),
+  deleteBudget: (id: string) => BudgetsAPI.delete(id),
+
+  // Closing Periods
+  getClosingPeriods: (year: number) => ClosingPeriodsAPI.getByYear(year),
+  closePeriod: (id: string) => ClosingPeriodsAPI.close(id),
+  reopenPeriod: (id: string) => ClosingPeriodsAPI.reopen(id),
+
+  // Reports
+  getDashboardSummary: () => ReportsAPI.getDashboardSummary(),
+  getCashFlow: (months?: number) => ReportsAPI.getCashFlow(months),
+  getExpensesByCategory: () => ReportsAPI.getExpensesByCategory(),
+  getRevenuesByCategory: () => ReportsAPI.getRevenuesByCategory(),
+};
+
 // ==================== EXPORT ALL ====================
 export default {
   farms: FarmsAPI,
@@ -692,4 +964,8 @@ export default {
   bankAccounts: BankAccountsAPI,
   operations: OperationsAPI,
   reports: ReportsAPI,
+  assets: AssetsAPI,
+  forecasts: ForecastsAPI,
+  budgets: BudgetsAPI,
+  closingPeriods: ClosingPeriodsAPI,
 };
