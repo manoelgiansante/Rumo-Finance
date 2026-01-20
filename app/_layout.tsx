@@ -26,15 +26,34 @@ function RootLayoutNav() {
             <Stack.Screen name="subscription" />
             <Stack.Screen name="expense-details" />
             <Stack.Screen name="add-expense" />
+            <Stack.Screen name="add-revenue" />
             <Stack.Screen name="stock" />
             <Stack.Screen name="receivables" />
+            <Stack.Screen name="revenues" />
             <Stack.Screen name="cash-flow" />
+            <Stack.Screen name="bank-reconciliation" />
+            <Stack.Screen name="livro-caixa" />
+            <Stack.Screen name="dre" />
             <Stack.Screen name="fiscal/index" />
             <Stack.Screen name="fiscal/nfe-wizard" />
             <Stack.Screen name="fiscal/nfe-details" />
             <Stack.Screen name="fiscal/mdfe-wizard" />
             <Stack.Screen name="profile" />
             <Stack.Screen name="purchase-orders" />
+            <Stack.Screen name="contracts" />
+            <Stack.Screen name="farms" />
+            <Stack.Screen name="suppliers" />
+            <Stack.Screen name="clients" />
+            <Stack.Screen name="fields" />
+            <Stack.Screen name="seasons" />
+            <Stack.Screen name="barter" />
+            <Stack.Screen name="arrendamento" />
+            <Stack.Screen name="operations" />
+            <Stack.Screen name="assets" />
+            <Stack.Screen name="budget" />
+            <Stack.Screen name="forecast" />
+            <Stack.Screen name="closing" />
+            <Stack.Screen name="suporte" />
           </Stack>
         </View>
       </View>
