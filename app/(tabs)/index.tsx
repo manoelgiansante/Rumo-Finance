@@ -1,15 +1,15 @@
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Platform } from "react-native";
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Platform, Animated } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { 
   TrendingUp, TrendingDown, DollarSign, CreditCard, 
   AlertTriangle, Clock, ArrowUpRight, ArrowDownRight,
-  Calendar, FileText, Package
+  Calendar, FileText, Package, Plus, X
 } from "lucide-react-native";
 import { useApp } from "@/providers/AppProvider";
 import { useAuth } from "@/contexts/AuthContext";
 import Colors from "@/constants/colors";
 import { router } from "expo-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { SubscriptionBanner } from "@/components/SubscriptionBanner";
 import OnboardingTutorial from "@/components/OnboardingTutorial";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -19,10 +19,20 @@ export default function DashboardScreen() {
   const { isPremium } = useAuth();
   const [selectedPeriod, setSelectedPeriod] = useState<'month' | 'quarter' | 'year'>('month');
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [fabOpen, setFabOpen] = useState(false);
+  const fabAnimation = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     checkOnboarding();
   }, []);
+
+  useEffect(() => {
+    Animated.spring(fabAnimation, {
+      toValue: fabOpen ? 1 : 0,
+      useNativeDriver: true,
+      friction: 6,
+    }).start();
+  }, [fabOpen]);
 
   const checkOnboarding = async () => {
     try {
@@ -45,22 +55,17 @@ export default function DashboardScreen() {
   };
 
   const stats = {
-    cashBalance: 487500,
-    accountsPayable: 125000,
-    accountsReceivable: 380000,
+    cashBalance: 0,
+    accountsPayable: 0,
+    accountsReceivable: 0,
     pendingApprovals: expenses.filter(e => e.status === 'pending_approval').length,
     overduePayments: expenses.filter(e => e.status === 'approved' && new Date(e.dueDate) < new Date()).length,
-    monthRevenue: 1235000,
-    monthExpenses: 1173220,
-    monthResult: 61780,
+    monthRevenue: 0,
+    monthExpenses: 0,
+    monthResult: 0,
   };
 
-  const recentActivity = [
-    { type: 'in' as const, desc: 'Venda Gado - Lote 15', value: 180000, date: 'Hoje, 14:30' },
-    { type: 'out' as const, desc: 'Ração Nutrifort', value: 15000, date: 'Hoje, 11:20' },
-    { type: 'in' as const, desc: 'Venda Cana - Usina', value: 95000, date: 'Ontem, 16:45' },
-    { type: 'out' as const, desc: 'Fertilizante NPK', value: 28000, date: 'Ontem, 09:15' },
-  ];
+  const recentActivity: { type: 'in' | 'out'; desc: string; value: number; date: string }[] = [];
 
   const isWeb = Platform.OS === 'web';
 
@@ -239,33 +244,41 @@ export default function DashboardScreen() {
                 </TouchableOpacity>
               </View>
 
-              {recentActivity.map((item, idx) => {
-                const isInflow = item.type === 'in';
-                return (
-                  <View key={idx} style={styles.activityItem}>
-                    <View style={[
-                      styles.activityIcon,
-                      { backgroundColor: isInflow ? Colors.success + '15' : Colors.error + '15' }
-                    ]}>
-                      {isInflow ? (
-                        <ArrowDownRight size={16} color={Colors.success} />
-                      ) : (
-                        <ArrowUpRight size={16} color={Colors.error} />
-                      )}
+              {recentActivity.length === 0 ? (
+                <View style={styles.emptyActivity}>
+                  <Clock size={32} color={Colors.textTertiary} />
+                  <Text style={styles.emptyActivityText}>Nenhuma movimentação ainda</Text>
+                  <Text style={styles.emptyActivityHint}>Registre sua primeira receita ou despesa</Text>
+                </View>
+              ) : (
+                recentActivity.map((item, idx) => {
+                  const isInflow = item.type === 'in';
+                  return (
+                    <View key={idx} style={styles.activityItem}>
+                      <View style={[
+                        styles.activityIcon,
+                        { backgroundColor: isInflow ? Colors.success + '15' : Colors.error + '15' }
+                      ]}>
+                        {isInflow ? (
+                          <ArrowDownRight size={16} color={Colors.success} />
+                        ) : (
+                          <ArrowUpRight size={16} color={Colors.error} />
+                        )}
+                      </View>
+                      <View style={styles.activityContent}>
+                        <Text style={styles.activityDesc}>{item.desc}</Text>
+                        <Text style={styles.activityDate}>{item.date}</Text>
+                      </View>
+                      <Text style={[
+                        styles.activityValue,
+                        { color: isInflow ? Colors.success : Colors.error }
+                      ]}>
+                        {isInflow ? '+' : '-'} R$ {item.value.toLocaleString('pt-BR')}
+                      </Text>
                     </View>
-                    <View style={styles.activityContent}>
-                      <Text style={styles.activityDesc}>{item.desc}</Text>
-                      <Text style={styles.activityDate}>{item.date}</Text>
-                    </View>
-                    <Text style={[
-                      styles.activityValue,
-                      { color: isInflow ? Colors.success : Colors.error }
-                    ]}>
-                      {isInflow ? '+' : '-'} R$ {item.value.toLocaleString('pt-BR')}
-                    </Text>
-                  </View>
-                );
-              })}
+                  );
+                })
+              )}
             </View>
           </View>
 
@@ -310,9 +323,93 @@ export default function DashboardScreen() {
             </View>
           </View>
 
-          <View style={{ height: 40 }} />
+          <View style={{ height: 100 }} />
         </ScrollView>
       </SafeAreaView>
+
+      {/* FAB - Floating Action Button */}
+      {fabOpen && (
+        <TouchableOpacity 
+          style={styles.fabOverlay} 
+          activeOpacity={1} 
+          onPress={() => setFabOpen(false)}
+        />
+      )}
+      
+      <View style={styles.fabContainer}>
+        {/* Opções do FAB */}
+        <Animated.View style={[
+          styles.fabOption,
+          {
+            opacity: fabAnimation,
+            transform: [
+              { translateY: fabAnimation.interpolate({ inputRange: [0, 1], outputRange: [0, -180] }) },
+              { scale: fabAnimation },
+            ],
+          },
+        ]}>
+          <TouchableOpacity 
+            style={[styles.fabOptionButton, { backgroundColor: Colors.success }]}
+            onPress={() => { setFabOpen(false); router.push('/add-revenue'); }}
+          >
+            <TrendingUp size={22} color={Colors.white} />
+          </TouchableOpacity>
+          <Text style={styles.fabOptionLabel}>Nova Receita</Text>
+        </Animated.View>
+
+        <Animated.View style={[
+          styles.fabOption,
+          {
+            opacity: fabAnimation,
+            transform: [
+              { translateY: fabAnimation.interpolate({ inputRange: [0, 1], outputRange: [0, -120] }) },
+              { scale: fabAnimation },
+            ],
+          },
+        ]}>
+          <TouchableOpacity 
+            style={[styles.fabOptionButton, { backgroundColor: Colors.error }]}
+            onPress={() => { setFabOpen(false); router.push('/add-expense'); }}
+          >
+            <TrendingDown size={22} color={Colors.white} />
+          </TouchableOpacity>
+          <Text style={styles.fabOptionLabel}>Nova Despesa</Text>
+        </Animated.View>
+
+        <Animated.View style={[
+          styles.fabOption,
+          {
+            opacity: fabAnimation,
+            transform: [
+              { translateY: fabAnimation.interpolate({ inputRange: [0, 1], outputRange: [0, -60] }) },
+              { scale: fabAnimation },
+            ],
+          },
+        ]}>
+          <TouchableOpacity 
+            style={[styles.fabOptionButton, { backgroundColor: Colors.info }]}
+            onPress={() => { setFabOpen(false); router.push('/fiscal/nfe-wizard'); }}
+          >
+            <FileText size={22} color={Colors.white} />
+          </TouchableOpacity>
+          <Text style={styles.fabOptionLabel}>Emitir NF-e</Text>
+        </Animated.View>
+
+        {/* Botão principal do FAB */}
+        <TouchableOpacity 
+          style={[styles.fab, fabOpen && styles.fabActive]}
+          onPress={() => setFabOpen(!fabOpen)}
+          activeOpacity={0.8}
+        >
+          <Animated.View style={{
+            transform: [{
+              rotate: fabAnimation.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '45deg'] }),
+            }],
+          }}>
+            <Plus size={28} color={Colors.white} />
+          </Animated.View>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -587,6 +684,21 @@ const styles = StyleSheet.create({
     fontWeight: '700' as const,
     letterSpacing: -0.2,
   },
+  emptyActivity: {
+    alignItems: 'center',
+    paddingVertical: 24,
+    gap: 8,
+  },
+  emptyActivityText: {
+    fontSize: 15,
+    fontWeight: '600' as const,
+    color: Colors.textSecondary,
+    marginTop: 8,
+  },
+  emptyActivityHint: {
+    fontSize: 13,
+    color: Colors.textTertiary,
+  },
   quickActions: {
     marginBottom: 24,
   },
@@ -624,5 +736,70 @@ const styles = StyleSheet.create({
     fontWeight: '600' as const,
     color: Colors.textPrimary,
     textAlign: 'center',
+  },
+  fabOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+  },
+  fabContainer: {
+    position: 'absolute',
+    bottom: 24,
+    right: 24,
+    alignItems: 'center',
+  },
+  fab: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: Colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 8,
+    shadowColor: Colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+  },
+  fabActive: {
+    backgroundColor: Colors.textPrimary,
+  },
+  fabOption: {
+    position: 'absolute',
+    flexDirection: 'row',
+    alignItems: 'center',
+    right: 0,
+  },
+  fabOptionButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+  },
+  fabOptionLabel: {
+    position: 'absolute',
+    right: 60,
+    backgroundColor: Colors.surface,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
+    fontSize: 13,
+    fontWeight: '600' as const,
+    color: Colors.textPrimary,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    whiteSpace: 'nowrap',
   },
 });

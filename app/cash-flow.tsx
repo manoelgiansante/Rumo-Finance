@@ -17,21 +17,14 @@ interface CashFlowItem {
   operation: string;
 }
 
-const mockCashFlow: CashFlowItem[] = [
-  { date: new Date('2025-01-16'), description: 'Venda de Gado - Lote 15', type: 'in', value: 180000, status: 'realized', category: 'Vendas', operation: 'Confinamento' },
-  { date: new Date('2025-01-17'), description: 'Pagamento Ração', type: 'out', value: 15000, status: 'realized', category: 'Insumos', operation: 'Confinamento' },
-  { date: new Date('2025-01-18'), description: 'Venda Cana - Usina', type: 'in', value: 95000, status: 'projected', category: 'Vendas', operation: 'Cana' },
-  { date: new Date('2025-01-20'), description: 'Fertilizante NPK', type: 'out', value: 28000, status: 'projected', category: 'Insumos', operation: 'Cana' },
-  { date: new Date('2025-01-22'), description: 'Conta de Energia', type: 'out', value: 3200, status: 'projected', category: 'Utilidades', operation: 'Sede' },
-  { date: new Date('2025-01-25'), description: 'Venda Composto Orgânico', type: 'in', value: 12000, status: 'projected', category: 'Vendas', operation: 'Compostagem' },
-];
+const mockCashFlow: CashFlowItem[] = [];
 
 export default function CashFlowScreen() {
   const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month'>('month');
   const [showImportModal, setShowImportModal] = useState(false);
   const [showNewModal, setShowNewModal] = useState(false);
   const [newMovement, setNewMovement] = useState({ description: '', type: 'in' as 'in' | 'out', value: '', category: '' });
-  const currentBalance = 287500;
+  const currentBalance = 0;
   const projectedInflows = mockCashFlow.filter(i => i.type === 'in' && i.status === 'projected').reduce((sum, i) => sum + i.value, 0);
   const projectedOutflows = mockCashFlow.filter(i => i.type === 'out' && i.status === 'projected').reduce((sum, i) => sum + i.value, 0);
   const projectedBalance = currentBalance + projectedInflows - projectedOutflows;

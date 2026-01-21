@@ -76,11 +76,7 @@ export default function MDFeWizardScreen() {
     router.back();
   };
 
-  const mockNFes = [
-    { id: 'nfe-1', number: '1245', value: 180000, destination: 'São Paulo/SP' },
-    { id: 'nfe-2', number: '1246', value: 85000, destination: 'Campinas/SP' },
-    { id: 'nfe-3', number: '1247', value: 95000, destination: 'Ribeirão Preto/SP' },
-  ];
+  const mockNFes: { id: string; number: string; value: number; destination: string }[] = [];
 
   const toggleNFeSelection = (id: string) => {
     setSelectedNFes(prev => 

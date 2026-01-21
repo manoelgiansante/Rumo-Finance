@@ -4,50 +4,20 @@ import { Calendar, TrendingUp, TrendingDown, Plus, Target, DollarSign } from "lu
 import Colors from "@/constants/colors";
 import { router, Stack } from "expo-router";
 
-const mockSeasons = [
-  {
-    id: '1',
-    name: 'Soja 2025/26 - Talhão Norte',
-    crop: 'Soja',
-    status: 'active' as const,
-    area: 150,
-    budgetedCost: 450000,
-    actualCost: 387500,
-    budgetedRevenue: 675000,
-    actualRevenue: 520000,
-    variance: -14,
-    expectedYield: 60,
-    actualYield: 52,
-  },
-  {
-    id: '2',
-    name: 'Milho 2025 - Talhão Sul',
-    crop: 'Milho',
-    status: 'active' as const,
-    area: 200,
-    budgetedCost: 600000,
-    actualCost: 565000,
-    budgetedRevenue: 900000,
-    actualRevenue: 780000,
-    variance: -6,
-    expectedYield: 180,
-    actualYield: 165,
-  },
-  {
-    id: '3',
-    name: 'Cana 2025 - Talhão Oeste',
-    crop: 'Cana',
-    status: 'planning' as const,
-    area: 120,
-    budgetedCost: 280000,
-    actualCost: 0,
-    budgetedRevenue: 420000,
-    actualRevenue: 0,
-    variance: 0,
-    expectedYield: 90,
-    actualYield: 0,
-  },
-];
+const mockSeasons: {
+  id: string;
+  name: string;
+  crop: string;
+  status: 'active' | 'planning' | 'completed';
+  area: number;
+  budgetedCost: number;
+  actualCost: number;
+  budgetedRevenue: number;
+  actualRevenue: number;
+  variance: number;
+  expectedYield: number;
+  actualYield: number;
+}[] = [];
 
 export default function SeasonsScreen() {
   const isWeb = Platform.OS === 'web';

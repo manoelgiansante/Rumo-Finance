@@ -4,52 +4,20 @@ import { MapPin, TrendingUp, Sprout, Plus, ChevronRight } from "lucide-react-nat
 import Colors from "@/constants/colors";
 import { router, Stack } from "expo-router";
 
-const mockFields = [
-  { 
-    id: '1', 
-    name: 'Talhão Norte', 
-    area: 150, 
-    crop: 'Soja', 
-    grossMargin: 185000, 
-    marginPerHa: 1233,
-    status: 'active' as const,
-    roi: 28.5
-  },
-  { 
-    id: '2', 
-    name: 'Talhão Sul', 
-    area: 200, 
-    crop: 'Milho', 
-    grossMargin: 240000, 
-    marginPerHa: 1200,
-    status: 'active' as const,
-    roi: 32.1
-  },
-  { 
-    id: '3', 
-    name: 'Talhão Oeste', 
-    area: 120, 
-    crop: 'Cana', 
-    grossMargin: 95000, 
-    marginPerHa: 792,
-    status: 'planning' as const,
-    roi: 18.3
-  },
-  { 
-    id: '4', 
-    name: 'Talhão Leste', 
-    area: 180, 
-    crop: 'Algodão', 
-    grossMargin: 305000, 
-    marginPerHa: 1694,
-    status: 'active' as const,
-    roi: 41.2
-  },
-];
+const mockFields: { 
+  id: string; 
+  name: string; 
+  area: number; 
+  crop: string; 
+  grossMargin: number; 
+  marginPerHa: number;
+  status: 'active' | 'planning' | 'inactive';
+  roi: number;
+}[] = [];
 
 const totalArea = mockFields.reduce((acc, f) => acc + f.area, 0);
 const totalMargin = mockFields.reduce((acc, f) => acc + f.grossMargin, 0);
-const avgMarginPerHa = totalMargin / totalArea;
+const avgMarginPerHa = totalArea > 0 ? totalMargin / totalArea : 0;
 
 export default function FieldsScreen() {
   const isWeb = Platform.OS === 'web';

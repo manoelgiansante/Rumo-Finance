@@ -39,64 +39,7 @@ const STATUS_CONFIG = {
 };
 
 // Mock data with season and field
-const mockOrders: PurchaseOrder[] = [
-  {
-    id: 'po-001',
-    supplierId: 'sup-1',
-    supplierName: 'Agropecuária Boa Vista',
-    operationId: 'op-1',
-    operationName: 'Cana',
-    seasonId: 'season-1',
-    seasonName: 'Safra 24/25',
-    fieldId: 'field-1',
-    fieldName: 'Talhão A - 150ha',
-    totalValue: 45000,
-    status: 'confirmed',
-    requestedBy: 'João Silva',
-    requestDate: new Date('2025-01-10'),
-    expectedDeliveryDate: new Date('2025-01-20'),
-    items: [
-      { name: 'Fertilizante NPK 10-10-10', quantity: 30, unit: 'ton', unitPrice: 1500 },
-    ]
-  },
-  {
-    id: 'po-002',
-    supplierId: 'sup-2',
-    supplierName: 'Nutripecuária Ltda',
-    operationId: 'op-2',
-    operationName: 'Confinamento',
-    seasonId: 'season-1',
-    seasonName: 'Safra 24/25',
-    fieldId: 'field-2',
-    fieldName: 'Curral Principal',
-    totalValue: 28000,
-    status: 'sent',
-    requestedBy: 'Maria Santos',
-    requestDate: new Date('2025-01-12'),
-    expectedDeliveryDate: new Date('2025-01-18'),
-    items: [
-      { name: 'Ração Bovina Engorda', quantity: 20, unit: 'ton', unitPrice: 1400 },
-    ]
-  },
-  {
-    id: 'po-003',
-    supplierId: 'sup-3',
-    supplierName: 'Defensivos Agrícolas SP',
-    operationId: 'op-1',
-    operationName: 'Cana',
-    seasonId: 'season-1',
-    seasonName: 'Safra 24/25',
-    fieldId: 'field-3',
-    fieldName: 'Talhão B - 80ha',
-    totalValue: 15000,
-    status: 'draft',
-    requestedBy: 'João Silva',
-    requestDate: new Date('2025-01-14'),
-    items: [
-      { name: 'Herbicida Glifosato', quantity: 100, unit: 'L', unitPrice: 150 },
-    ]
-  },
-];
+const mockOrders: PurchaseOrder[] = [];
 
 export default function PurchaseOrdersScreen() {
   const [search, setSearch] = useState('');

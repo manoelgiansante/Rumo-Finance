@@ -36,24 +36,9 @@ interface SystemEntry {
   isMatched: boolean;
 }
 
-const mockBankTransactions: BankTransaction[] = [
-  { id: 'bt-1', date: new Date('2025-01-15'), description: 'TED RECEBIDA - FRIGORÍFICO MARFRIG S/A', value: 180000, type: 'credit', balance: 467500, status: 'matched', matchedEntryId: 'se-1' },
-  { id: 'bt-2', date: new Date('2025-01-14'), description: 'PIX ENVIADO - AGROPECUÁRIA BOA VISTA', value: 25000, type: 'debit', balance: 287500, status: 'matched', matchedEntryId: 'se-2' },
-  { id: 'bt-3', date: new Date('2025-01-13'), description: 'TARIFA DE MANUTENÇÃO DE CONTA', value: 45, type: 'debit', balance: 312500, status: 'unmatched' },
-  { id: 'bt-4', date: new Date('2025-01-12'), description: 'TED RECEBIDA - USINA SAO MARTINHO', value: 95000, type: 'credit', balance: 312545, status: 'divergent', matchedEntryId: 'se-3' },
-  { id: 'bt-5', date: new Date('2025-01-11'), description: 'BOLETO - FERT. NPK AGROMAX', value: 44850, type: 'debit', balance: 217545, status: 'divergent', matchedEntryId: 'se-4' },
-  { id: 'bt-6', date: new Date('2025-01-10'), description: 'DEB AUTOMÁTICO - CPFL ENERGIA', value: 3200, type: 'debit', balance: 262395, status: 'matched', matchedEntryId: 'se-5' },
-  { id: 'bt-7', date: new Date('2025-01-09'), description: 'PIX RECEBIDO - AGRO FERTILIZANTES LTDA', value: 12000, type: 'credit', balance: 265595, status: 'unmatched' },
-];
+const mockBankTransactions: BankTransaction[] = [];
 
-const mockSystemEntries: SystemEntry[] = [
-  { id: 'se-1', date: new Date('2025-01-15'), description: 'Venda de Gado Gordo - Lote 15', value: 180000, type: 'receita', category: 'Venda Produção', client: 'Frigorífico Marfrig', isMatched: true },
-  { id: 'se-2', date: new Date('2025-01-14'), description: 'Compra de Ração Animal', value: 25000, type: 'despesa', category: 'Insumos', supplier: 'Agropecuária Boa Vista', isMatched: true },
-  { id: 'se-3', date: new Date('2025-01-12'), description: 'Venda de Cana-de-açúcar', value: 95500, type: 'receita', category: 'Venda Produção', client: 'Usina São Martinho', isMatched: true },
-  { id: 'se-4', date: new Date('2025-01-11'), description: 'Compra de Fertilizante NPK', value: 45000, type: 'despesa', category: 'Insumos', supplier: 'Agromax Fertilizantes', isMatched: true },
-  { id: 'se-5', date: new Date('2025-01-10'), description: 'Conta de Energia Elétrica', value: 3200, type: 'despesa', category: 'Utilidades', supplier: 'CPFL Energia', isMatched: true },
-  { id: 'se-6', date: new Date('2025-01-08'), description: 'Venda de Composto Orgânico', value: 12000, type: 'receita', category: 'Venda Produção', client: 'Agro Fertilizantes Ltda', isMatched: false },
-];
+const mockSystemEntries: SystemEntry[] = [];
 
 const STATUS_CONFIG = {
   matched: { label: 'Conciliado', color: Colors.success, icon: CheckCircle2 },

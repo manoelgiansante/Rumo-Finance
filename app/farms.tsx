@@ -34,11 +34,7 @@ export default function FarmsScreen() {
     size: '',
   });
 
-  const mockFarms: Farm[] = [
-    { id: '1', name: 'Fazenda Santa Maria', location: 'Ribeirão Preto - SP', city: 'Ribeirão Preto', state: 'SP', size: 850, active: true },
-    { id: '2', name: 'Fazenda São José', location: 'Uberaba - MG', city: 'Uberaba', state: 'MG', size: 1200, active: true },
-    { id: '3', name: 'Sítio Boa Vista', location: 'Piracicaba - SP', city: 'Piracicaba', state: 'SP', size: 120, active: true },
-  ];
+  const mockFarms: Farm[] = [];
 
   const displayFarms = farms.length > 0 ? farms : mockFarms;
 

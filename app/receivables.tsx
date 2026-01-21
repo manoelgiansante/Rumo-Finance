@@ -17,13 +17,7 @@ interface Receivable {
   invoiceNumber?: string;
 }
 
-const mockReceivables: Receivable[] = [
-  { id: '1', description: 'Venda Gado Gordo - Lote 18', clientName: 'Frigorífico Marfrig', operation: 'Confinamento', value: 220000, dueDate: new Date('2025-01-20'), status: 'pending', invoiceNumber: 'NF-1234' },
-  { id: '2', description: 'Venda Cana-de-açúcar', clientName: 'Usina São Martinho', operation: 'Cana', value: 185000, dueDate: new Date('2025-01-25'), status: 'pending', invoiceNumber: 'NF-1235' },
-  { id: '3', description: 'Venda Composto Orgânico', clientName: 'Agro Fertilizantes Ltda', operation: 'Compostagem', value: 28000, dueDate: new Date('2025-01-18'), status: 'pending' },
-  { id: '4', description: 'Venda Gado - Lote 17', clientName: 'JBS Friboi', operation: 'Confinamento', value: 195000, dueDate: new Date('2025-01-15'), status: 'received', invoiceNumber: 'NF-1230' },
-  { id: '5', description: 'Venda Cana (Dez)', clientName: 'Usina Raízen', operation: 'Cana', value: 142000, dueDate: new Date('2025-01-10'), status: 'overdue', invoiceNumber: 'NF-1228' },
-];
+const mockReceivables: Receivable[] = [];
 
 export default function ReceivablesScreen() {
   const [searchQuery, setSearchQuery] = useState('');
