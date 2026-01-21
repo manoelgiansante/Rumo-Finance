@@ -32,6 +32,7 @@ function RootLayoutNav() {
             <Stack.Screen name="revenues" />
             <Stack.Screen name="cash-flow" />
             <Stack.Screen name="bank-reconciliation" />
+            <Stack.Screen name="conciliacao-bancaria" />
             <Stack.Screen name="livro-caixa" />
             <Stack.Screen name="dre" />
             <Stack.Screen name="fiscal/index" />

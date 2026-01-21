@@ -1,7 +1,7 @@
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Platform } from "react-native";
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Platform, Modal } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Stack, router } from "expo-router";
-import { ArrowLeft, Download, TrendingUp, TrendingDown, DollarSign } from "lucide-react-native";
+import { ArrowLeft, Download, TrendingUp, TrendingDown, DollarSign, FileText, Share2 } from "lucide-react-native";
 import { useApp } from "@/providers/AppProvider";
 import Colors from "@/constants/colors";
 import { useState, useMemo } from "react";
@@ -14,6 +14,7 @@ export default function DREScreen() {
   const { expenses, revenues, operations } = useApp();
   const [selectedPeriod, setSelectedPeriod] = useState<Period>('month');
   const [selectedDate] = useState(new Date());
+  const [showExportModal, setShowExportModal] = useState(false);
 
   const { startDate, endDate } = useMemo(() => {
     if (selectedPeriod === 'month') {
@@ -88,8 +89,9 @@ export default function DREScreen() {
 
   const isWeb = Platform.OS === 'web';
 
-  const handleExport = () => {
-    console.log('Exportando DRE...');
+  const handleExport = (format: string) => {
+    setShowExportModal(false);
+    alert(`DRE exportado em formato ${format}!`);
   };
 
   return (
@@ -115,7 +117,7 @@ export default function DREScreen() {
                 {format(startDate, "dd 'de' MMM", { locale: ptBR })} - {format(endDate, "dd 'de' MMM 'de' yyyy", { locale: ptBR })}
               </Text>
             </View>
-            <TouchableOpacity style={styles.exportButton} onPress={handleExport} activeOpacity={0.7}>
+            <TouchableOpacity style={styles.exportButton} onPress={() => setShowExportModal(true)} activeOpacity={0.7}>
               <Download size={18} color={Colors.primary} />
               <Text style={styles.exportText}>Exportar</Text>
             </TouchableOpacity>
@@ -290,6 +292,73 @@ export default function DREScreen() {
           <View style={{ height: 40 }} />
         </ScrollView>
       </SafeAreaView>
+
+      {/* Modal de Exportação */}
+      <Modal
+        visible={showExportModal}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowExportModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Exportar DRE</Text>
+            <Text style={styles.modalDescription}>
+              Escolha o formato de exportação
+            </Text>
+
+            <TouchableOpacity 
+              style={styles.exportOption} 
+              onPress={() => handleExport('Excel')}
+              activeOpacity={0.7}
+            >
+              <View style={[styles.exportOptionIcon, { backgroundColor: Colors.success + '15' }]}>
+                <FileText size={24} color={Colors.success} />
+              </View>
+              <View style={styles.exportOptionInfo}>
+                <Text style={styles.exportOptionTitle}>Excel (XLSX)</Text>
+                <Text style={styles.exportOptionDesc}>Planilha editável com dados completos</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={styles.exportOption} 
+              onPress={() => handleExport('PDF')}
+              activeOpacity={0.7}
+            >
+              <View style={[styles.exportOptionIcon, { backgroundColor: Colors.error + '15' }]}>
+                <FileText size={24} color={Colors.error} />
+              </View>
+              <View style={styles.exportOptionInfo}>
+                <Text style={styles.exportOptionTitle}>PDF</Text>
+                <Text style={styles.exportOptionDesc}>Relatório formatado para impressão</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={styles.exportOption} 
+              onPress={() => handleExport('Contador')}
+              activeOpacity={0.7}
+            >
+              <View style={[styles.exportOptionIcon, { backgroundColor: Colors.primary + '15' }]}>
+                <Share2 size={24} color={Colors.primary} />
+              </View>
+              <View style={styles.exportOptionInfo}>
+                <Text style={styles.exportOptionTitle}>Enviar para Contador</Text>
+                <Text style={styles.exportOptionDesc}>Integração com sistema contábil</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={styles.modalCloseButton}
+              onPress={() => setShowExportModal(false)}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.modalCloseButtonText}>Cancelar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -574,5 +643,67 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700' as const,
     letterSpacing: -0.3,
+  },
+  // Modal styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: Colors.surface,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    padding: 24,
+  },
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: '700' as const,
+    color: Colors.textPrimary,
+    marginBottom: 8,
+  },
+  modalDescription: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+    marginBottom: 24,
+  },
+  exportOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    backgroundColor: Colors.background,
+    borderRadius: 14,
+    padding: 16,
+    marginBottom: 12,
+  },
+  exportOptionIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  exportOptionInfo: {
+    flex: 1,
+  },
+  exportOptionTitle: {
+    fontSize: 16,
+    fontWeight: '600' as const,
+    color: Colors.textPrimary,
+    marginBottom: 4,
+  },
+  exportOptionDesc: {
+    fontSize: 13,
+    color: Colors.textSecondary,
+  },
+  modalCloseButton: {
+    alignItems: 'center',
+    paddingVertical: 16,
+    marginTop: 8,
+  },
+  modalCloseButtonText: {
+    fontSize: 16,
+    fontWeight: '600' as const,
+    color: Colors.textSecondary,
   },
 });

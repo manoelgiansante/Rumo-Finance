@@ -65,49 +65,77 @@ export default function AddRevenueScreen() {
 
           <View style={styles.section}>
             <Text style={styles.label}>Cliente</Text>
-            <View style={styles.selectContainer}>
-              {clients.map((client) => (
-                <TouchableOpacity
-                  key={client.id}
-                  style={[
-                    styles.selectOption,
-                    selectedClient === client.id && styles.selectOptionActive
-                  ]}
-                  onPress={() => setSelectedClient(client.id)}
-                >
-                  <Text style={[
-                    styles.selectOptionText,
-                    selectedClient === client.id && styles.selectOptionTextActive
-                  ]}>
-                    {client.name}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
+            {clients.length === 0 ? (
+              <TouchableOpacity 
+                style={styles.emptyWarning}
+                onPress={() => router.push('/clients')}
+              >
+                <Text style={styles.emptyWarningText}>
+                  Nenhum cliente cadastrado
+                </Text>
+                <Text style={styles.emptyWarningLink}>
+                  Toque aqui para cadastrar →
+                </Text>
+              </TouchableOpacity>
+            ) : (
+              <View style={styles.selectContainer}>
+                {clients.map((client) => (
+                  <TouchableOpacity
+                    key={client.id}
+                    style={[
+                      styles.selectOption,
+                      selectedClient === client.id && styles.selectOptionActive
+                    ]}
+                    onPress={() => setSelectedClient(client.id)}
+                  >
+                    <Text style={[
+                      styles.selectOptionText,
+                      selectedClient === client.id && styles.selectOptionTextActive
+                    ]}>
+                      {client.name}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
           </View>
 
           <View style={styles.section}>
             <Text style={styles.label}>Operação</Text>
-            <View style={styles.selectContainer}>
-              {operations.map((op) => (
-                <TouchableOpacity
-                  key={op.id}
-                  style={[
-                    styles.selectOption,
-                    selectedOperation === op.id && styles.selectOptionActive
-                  ]}
-                  onPress={() => setSelectedOperation(op.id)}
-                >
-                  <View style={[styles.operationDot, { backgroundColor: op.color }]} />
-                  <Text style={[
-                    styles.selectOptionText,
-                    selectedOperation === op.id && styles.selectOptionTextActive
-                  ]}>
-                    {op.name}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
+            {operations.length === 0 ? (
+              <TouchableOpacity 
+                style={styles.emptyWarning}
+                onPress={() => router.push('/operations')}
+              >
+                <Text style={styles.emptyWarningText}>
+                  Nenhuma operação cadastrada
+                </Text>
+                <Text style={styles.emptyWarningLink}>
+                  Toque aqui para cadastrar →
+                </Text>
+              </TouchableOpacity>
+            ) : (
+              <View style={styles.selectContainer}>
+                {operations.map((op) => (
+                  <TouchableOpacity
+                    key={op.id}
+                    style={[
+                      styles.selectOption,
+                      selectedOperation === op.id && styles.selectOptionActive
+                    ]}
+                    onPress={() => setSelectedOperation(op.id)}
+                  >
+                    <View style={[styles.operationDot, { backgroundColor: op.color }]} />
+                    <Text style={[
+                      styles.selectOptionText,
+                      selectedOperation === op.id && styles.selectOptionTextActive
+                    ]}>
+                      {op.name}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
           </View>
 
           <View style={styles.section}>
@@ -238,5 +266,24 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
+  },
+  emptyWarning: {
+    backgroundColor: Colors.warning + '15',
+    borderRadius: 14,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: Colors.warning + '30',
+    alignItems: 'center',
+  },
+  emptyWarningText: {
+    fontSize: 14,
+    color: Colors.warning,
+    fontWeight: '500' as const,
+    marginBottom: 6,
+  },
+  emptyWarningLink: {
+    fontSize: 14,
+    color: Colors.primary,
+    fontWeight: '600' as const,
   },
 });

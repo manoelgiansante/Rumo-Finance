@@ -29,6 +29,8 @@ const mockCashFlow: CashFlowItem[] = [
 export default function CashFlowScreen() {
   const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month'>('month');
   const [showImportModal, setShowImportModal] = useState(false);
+  const [showNewModal, setShowNewModal] = useState(false);
+  const [newMovement, setNewMovement] = useState({ description: '', type: 'in' as 'in' | 'out', value: '', category: '' });
   const currentBalance = 287500;
   const projectedInflows = mockCashFlow.filter(i => i.type === 'in' && i.status === 'projected').reduce((sum, i) => sum + i.value, 0);
   const projectedOutflows = mockCashFlow.filter(i => i.type === 'out' && i.status === 'projected').reduce((sum, i) => sum + i.value, 0);
@@ -73,6 +75,7 @@ export default function CashFlowScreen() {
           </TouchableOpacity>
           <TouchableOpacity 
             style={[styles.actionButton, styles.actionButtonPrimary]}
+            onPress={() => setShowNewModal(true)}
             activeOpacity={0.7}
           >
             <Plus size={18} color={Colors.white} />
@@ -282,6 +285,96 @@ export default function CashFlowScreen() {
             <TouchableOpacity 
               style={styles.modalCloseButton}
               onPress={() => setShowImportModal(false)}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.modalCloseButtonText}>Cancelar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal Nova Movimentação */}
+      <Modal
+        visible={showNewModal}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowNewModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Nova Movimentação</Text>
+            <Text style={styles.modalDescription}>
+              Adicione uma entrada ou saída no fluxo de caixa
+            </Text>
+
+            <View style={styles.typeSelector}>
+              <TouchableOpacity
+                style={[styles.typeOption, newMovement.type === 'in' && styles.typeOptionIn]}
+                onPress={() => setNewMovement({ ...newMovement, type: 'in' })}
+              >
+                <TrendingUp size={20} color={newMovement.type === 'in' ? Colors.white : Colors.success} />
+                <Text style={[styles.typeOptionText, newMovement.type === 'in' && { color: Colors.white }]}>Entrada</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.typeOption, newMovement.type === 'out' && styles.typeOptionOut]}
+                onPress={() => setNewMovement({ ...newMovement, type: 'out' })}
+              >
+                <TrendingDown size={20} color={newMovement.type === 'out' ? Colors.white : Colors.error} />
+                <Text style={[styles.typeOptionText, newMovement.type === 'out' && { color: Colors.white }]}>Saída</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.formGroup}>
+              <Text style={styles.formLabel}>Descrição</Text>
+              <View style={styles.formInput}>
+                <FileText size={18} color={Colors.textTertiary} />
+                <Text style={styles.formInputText}>
+                  {newMovement.description || 'Ex: Venda de gado'}
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.formGroup}>
+              <Text style={styles.formLabel}>Valor (R$)</Text>
+              <View style={styles.formInput}>
+                <Text style={styles.formInputText}>
+                  {newMovement.value || '0,00'}
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.formGroup}>
+              <Text style={styles.formLabel}>Categoria</Text>
+              <View style={styles.categoryOptions}>
+                {['Vendas', 'Insumos', 'Utilidades', 'Mão de Obra', 'Outros'].map(cat => (
+                  <TouchableOpacity
+                    key={cat}
+                    style={[styles.categoryChip, newMovement.category === cat && styles.categoryChipActive]}
+                    onPress={() => setNewMovement({ ...newMovement, category: cat })}
+                  >
+                    <Text style={[styles.categoryChipText, newMovement.category === cat && { color: Colors.white }]}>
+                      {cat}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+
+            <TouchableOpacity 
+              style={styles.saveButton}
+              onPress={() => {
+                alert('Movimentação adicionada com sucesso!');
+                setShowNewModal(false);
+                setNewMovement({ description: '', type: 'in', value: '', category: '' });
+              }}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.saveButtonText}>Salvar Movimentação</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={styles.modalCloseButton}
+              onPress={() => setShowNewModal(false)}
               activeOpacity={0.7}
             >
               <Text style={styles.modalCloseButtonText}>Cancelar</Text>
@@ -584,5 +677,92 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600' as const,
     color: Colors.textSecondary,
+  },
+  typeSelector: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 20,
+  },
+  typeOption: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    padding: 14,
+    borderRadius: 12,
+    backgroundColor: Colors.surface,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  typeOptionIn: {
+    backgroundColor: Colors.success,
+    borderColor: Colors.success,
+  },
+  typeOptionOut: {
+    backgroundColor: Colors.error,
+    borderColor: Colors.error,
+  },
+  typeOptionText: {
+    fontSize: 15,
+    fontWeight: '600' as const,
+    color: Colors.textSecondary,
+  },
+  formGroup: {
+    marginBottom: 16,
+  },
+  formLabel: {
+    fontSize: 14,
+    fontWeight: '600' as const,
+    color: Colors.textPrimary,
+    marginBottom: 8,
+  },
+  formInput: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    backgroundColor: Colors.surface,
+    borderRadius: 12,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  formInputText: {
+    fontSize: 15,
+    color: Colors.textTertiary,
+  },
+  categoryOptions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  categoryChip: {
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: Colors.surface,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  categoryChipActive: {
+    backgroundColor: Colors.primary,
+    borderColor: Colors.primary,
+  },
+  categoryChipText: {
+    fontSize: 13,
+    fontWeight: '600' as const,
+    color: Colors.textSecondary,
+  },
+  saveButton: {
+    backgroundColor: Colors.primary,
+    borderRadius: 12,
+    padding: 16,
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  saveButtonText: {
+    fontSize: 16,
+    fontWeight: '600' as const,
+    color: Colors.white,
   },
 });
