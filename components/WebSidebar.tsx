@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Platform } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Platform, Image } from "react-native";
 import { 
   LayoutDashboard, FileText, TrendingUp, TrendingDown, 
   Building2, Users, Package, ShoppingCart, DollarSign,
@@ -75,9 +75,11 @@ export default function WebSidebar() {
     <View style={styles.sidebar}>
       <View style={styles.header}>
         <View style={styles.logoContainer}>
-          <View style={styles.logoIcon}>
-            <Tractor size={22} color="#fff" />
-          </View>
+          <Image 
+            source={require('@/assets/images/logo.png')} 
+            style={styles.logoImage}
+            resizeMode="contain"
+          />
           <View>
             <Text style={styles.logo}>Agrofinance</Text>
             <Text style={styles.subtitle}>GESTÃO RURAL</Text>
@@ -158,6 +160,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
+  },
+  logoImage: {
+    width: 44,
+    height: 44,
+    borderRadius: 10,
   },
   logoIcon: {
     width: 40,
