@@ -28,18 +28,18 @@ export default function TermosScreen() {
 
         <Section title="1. Aceitação dos Termos">
           <Text style={styles.text}>
-            Bem-vindo ao AgroFinance. Ao acessar ou utilizar nosso aplicativo, você concorda em
+            Bem-vindo ao Rumo Finance. Ao acessar ou utilizar nosso aplicativo, você concorda em
             cumprir e estar vinculado a estes Termos de Uso (Termos). Se você não concordar com
             qualquer parte destes Termos, não deverá utilizar o aplicativo.
             {'\n\n'}
-            Estes Termos constituem um acordo legal entre você (Usuário) e a AgroFinance Tecnologia
-            Ltda (AgroFinance, nós, nosso).
+            Estes Termos constituem um acordo legal entre você (Usuário) e a Rumo Finance Tecnologia
+            Ltda (Rumo Finance, nós, nosso).
           </Text>
         </Section>
 
         <Section title="2. Descrição do Serviço">
           <Text style={styles.text}>
-            O AgroFinance é uma plataforma de gestão financeira e operacional para propriedades
+            O Rumo Finance é uma plataforma de gestão financeira e operacional para propriedades
             rurais que oferece:{'\n\n'}• Controle financeiro (receitas, despesas, fluxo de caixa)
             {'\n'}• Gestão de operações agrícolas{'\n'}• Controle de estoque e insumos{'\n'}• Gestão
             de contratos e clientes{'\n'}• Emissão e gerenciamento de notas fiscais{'\n'}•
@@ -51,7 +51,7 @@ export default function TermosScreen() {
         <Section title="3. Cadastro e Conta">
           <Text style={styles.subsectionTitle}>3.1 Requisitos de Cadastro</Text>
           <Text style={styles.text}>
-            Para utilizar o AgroFinance, você deve:{'\n'}• Ter no mínimo 18 anos de idade{'\n'}•
+            Para utilizar o Rumo Finance, você deve:{'\n'}• Ter no mínimo 18 anos de idade{'\n'}•
             Fornecer informações verdadeiras, precisas e atualizadas{'\n'}• Manter a
             confidencialidade de suas credenciais de acesso{'\n'}• Notificar-nos imediatamente sobre
             qualquer uso não autorizado
@@ -66,7 +66,7 @@ export default function TermosScreen() {
 
         <Section title="4. Uso Aceitável">
           <Text style={styles.text}>
-            Ao utilizar o AgroFinance, você concorda em NÃO:{'\n\n'}• Violar qualquer lei ou
+            Ao utilizar o Rumo Finance, você concorda em NÃO:{'\n\n'}• Violar qualquer lei ou
             regulamento aplicável{'\n'}• Usar o serviço para fins fraudulentos ou ilícitos{'\n'}•
             Inserir dados falsos ou enganosos{'\n'}• Tentar obter acesso não autorizado ao sistema
             {'\n'}• Interferir no funcionamento do aplicativo{'\n'}• Fazer engenharia reversa,
@@ -78,8 +78,8 @@ export default function TermosScreen() {
 
         <Section title="5. Propriedade Intelectual">
           <Text style={styles.text}>
-            Todo o conteúdo do AgroFinance, incluindo mas não limitado a software, design, texto,
-            gráficos, logos, ícones e código, é propriedade da AgroFinance ou de seus licenciadores
+            Todo o conteúdo do Rumo Finance, incluindo mas não limitado a software, design, texto,
+            gráficos, logos, ícones e código, é propriedade da Rumo Finance ou de seus licenciadores
             e está protegido por leis de direitos autorais e propriedade intelectual.{'\n\n'}
             Você recebe uma licença limitada, não exclusiva e revogável para usar o aplicativo
             conforme estes Termos. Esta licença não inclui direitos de:{'\n'}• Revenda ou uso
@@ -90,7 +90,7 @@ export default function TermosScreen() {
 
         <Section title="6. Seus Dados">
           <Text style={styles.text}>
-            Você mantém todos os direitos sobre os dados que insere no AgroFinance (informações
+            Você mantém todos os direitos sobre os dados que insere no Rumo Finance (informações
             financeiras, operacionais, cadastros, etc.).{'\n\n'}
             Ao utilizar nosso serviço, você nos concede uma licença limitada para processar,
             armazenar e exibir seus dados exclusivamente para fornecer os serviços contratados.
@@ -115,7 +115,7 @@ export default function TermosScreen() {
 
         <Section title="8. Disponibilidade do Serviço">
           <Text style={styles.text}>
-            Nos esforçamos para manter o AgroFinance disponível 24/7, porém:{'\n\n'}• Podem ocorrer
+            Nos esforçamos para manter o Rumo Finance disponível 24/7, porém:{'\n\n'}• Podem ocorrer
             interrupções para manutenção programada{'\n'}• Não garantimos disponibilidade
             ininterrupta{'\n'}• Não nos responsabilizamos por indisponibilidade causada por
             terceiros{'\n'}• Reservamos o direito de modificar ou descontinuar recursos{'\n\n'}
@@ -125,7 +125,7 @@ export default function TermosScreen() {
 
         <Section title="9. Limitação de Responsabilidade">
           <Text style={styles.text}>
-            O AgroFinance é fornecido como está e conforme disponível. Na extensão máxima permitida
+            O Rumo Finance é fornecido como está e conforme disponível. Na extensão máxima permitida
             por lei:{'\n\n'}• Não garantimos que o serviço será livre de erros ou interrupções{'\n'}
             • Não nos responsabilizamos por decisões tomadas com base nos dados do app{'\n'}• Não
             somos responsáveis por perdas de dados, lucros ou prejuízos indiretos{'\n'}• Nossa
@@ -137,7 +137,7 @@ export default function TermosScreen() {
 
         <Section title="10. Indenização">
           <Text style={styles.text}>
-            Você concorda em indenizar e isentar a AgroFinance, seus diretores, funcionários e
+            Você concorda em indenizar e isentar a Rumo Finance, seus diretores, funcionários e
             parceiros de quaisquer reivindicações, perdas, danos, responsabilidades e despesas
             (incluindo honorários advocatícios) resultantes de:{'\n\n'}• Seu uso do aplicativo{'\n'}
             • Violação destes Termos{'\n'}• Violação de direitos de terceiros{'\n'}• Informações
@@ -180,10 +180,10 @@ export default function TermosScreen() {
         <Section title="14. Disposições Gerais">
           <Text style={styles.text}>
             • <Text style={styles.bold}>Integralidade:</Text> Estes Termos constituem o acordo
-            integral entre você e a AgroFinance.{'\n\n'}• <Text style={styles.bold}>Renúncia:</Text>{' '}
-            A não execução de qualquer disposição não constitui renúncia.{'\n\n'}•{' '}
-            <Text style={styles.bold}>Divisibilidade:</Text> Se alguma disposição for considerada
-            inválida, as demais permanecerão em vigor.{'\n\n'}•{' '}
+            integral entre você e a Rumo Finance.{'\n\n'}•{' '}
+            <Text style={styles.bold}>Renúncia:</Text> A não execução de qualquer disposição não
+            constitui renúncia.{'\n\n'}• <Text style={styles.bold}>Divisibilidade:</Text> Se alguma
+            disposição for considerada inválida, as demais permanecerão em vigor.{'\n\n'}•{' '}
             <Text style={styles.bold}>Cessão:</Text> Você não pode transferir seus direitos sem
             nosso consentimento.{'\n\n'}• <Text style={styles.bold}>Idioma:</Text> Em caso de
             conflito entre traduções, a versão em português prevalece.
@@ -193,29 +193,29 @@ export default function TermosScreen() {
         <Section title="15. Contato">
           <Text style={styles.text}>
             Para dúvidas sobre estes Termos de Uso:{'\n\n'}
-            <Text style={styles.bold}>AgroFinance Tecnologia Ltda</Text>
+            <Text style={styles.bold}>Rumo Finance Tecnologia Ltda</Text>
             {'\n'}
             <Text style={styles.bold}>CNPJ:</Text> [Inserir CNPJ]{'\n'}
             <Text style={styles.bold}>Endereço:</Text> [Inserir Endereço Completo]{'\n'}
-            <Text style={styles.bold}>E-mail:</Text> contato@agrofinance.app{'\n'}
-            <Text style={styles.bold}>Suporte:</Text> https://agrofinance.app/suporte{'\n'}
+            <Text style={styles.bold}>E-mail:</Text> contato@rumofinance.app{'\n'}
+            <Text style={styles.bold}>Suporte:</Text> https://rumofinance.app/suporte{'\n'}
             <Text style={styles.bold}>Telefone:</Text> [Inserir Telefone]
           </Text>
         </Section>
 
         <View style={styles.acceptance}>
           <Text style={styles.acceptanceText}>
-            Ao utilizar o AgroFinance, você declara ter lido, compreendido e concordado com estes
+            Ao utilizar o Rumo Finance, você declara ter lido, compreendido e concordado com estes
             Termos de Uso e com nossa Política de Privacidade.
           </Text>
         </View>
 
         <View style={styles.footer}>
-          <TouchableOpacity onPress={() => Linking.openURL('https://agrofinance.app/privacidade')}>
+          <TouchableOpacity onPress={() => Linking.openURL('https://rumofinance.app/privacidade')}>
             <Text style={styles.link}>Ver Política de Privacidade</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => Linking.openURL('https://agrofinance.app/suporte')}
+            onPress={() => Linking.openURL('https://rumofinance.app/suporte')}
             style={styles.footerButton}
           >
             <Text style={styles.link}>Central de Suporte</Text>

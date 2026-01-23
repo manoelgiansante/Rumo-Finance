@@ -28,7 +28,7 @@ export default function PrivacidadeScreen() {
 
         <Section title="1. Introdução">
           <Text style={styles.text}>
-            A AgroFinance (nós, nosso ou nossa) está comprometida em proteger e respeitar sua
+            A Rumo Finance (nós, nosso ou nossa) está comprometida em proteger e respeitar sua
             privacidade. Esta Política de Privacidade explica como coletamos, usamos, divulgamos e
             protegemos suas informações pessoais de acordo com a Lei Geral de Proteção de Dados
             (LGPD - Lei nº 13.709/2018) e demais legislações aplicáveis.
@@ -37,11 +37,11 @@ export default function PrivacidadeScreen() {
 
         <Section title="2. Responsável pelo Tratamento de Dados">
           <Text style={styles.text}>
-            <Text style={styles.bold}>Razão Social:</Text> AgroFinance Tecnologia Ltda{'\n'}
+            <Text style={styles.bold}>Razão Social:</Text> Rumo Finance Tecnologia Ltda{'\n'}
             <Text style={styles.bold}>CNPJ:</Text> [Inserir CNPJ]{'\n'}
             <Text style={styles.bold}>Endereço:</Text> [Inserir Endereço Completo]{'\n'}
-            <Text style={styles.bold}>E-mail:</Text> contato@agrofinance.app{'\n'}
-            <Text style={styles.bold}>Encarregado (DPO):</Text> dpo@agrofinance.app
+            <Text style={styles.bold}>E-mail:</Text> contato@rumofinance.app{'\n'}
+            <Text style={styles.bold}>Encarregado (DPO):</Text> dpo@rumofinance.app
           </Text>
         </Section>
 
@@ -123,8 +123,8 @@ export default function PrivacidadeScreen() {
             compartilhamos{'\n'}• <Text style={styles.bold}>Oposição:</Text> Se opor ao tratamento
             de dados{'\n\n'}
             Para exercer seus direitos, entre em contato conosco através de:{'\n'}
-            <Text style={styles.bold}>E-mail:</Text> dpo@agrofinance.app{'\n'}
-            <Text style={styles.bold}>Formulário:</Text> https://agrofinance.app/suporte
+            <Text style={styles.bold}>E-mail:</Text> dpo@rumofinance.app{'\n'}
+            <Text style={styles.bold}>Formulário:</Text> https://rumofinance.app/suporte
           </Text>
         </Section>
 
@@ -163,20 +163,20 @@ export default function PrivacidadeScreen() {
           <Text style={styles.text}>
             Para dúvidas, solicitações ou reclamações sobre esta Política de Privacidade ou o
             tratamento de seus dados pessoais:{'\n\n'}
-            <Text style={styles.bold}>E-mail:</Text> contato@agrofinance.app{'\n'}
-            <Text style={styles.bold}>DPO:</Text> dpo@agrofinance.app{'\n'}
-            <Text style={styles.bold}>Suporte:</Text> https://agrofinance.app/suporte{'\n\n'}
+            <Text style={styles.bold}>E-mail:</Text> contato@rumofinance.app{'\n'}
+            <Text style={styles.bold}>DPO:</Text> dpo@rumofinance.app{'\n'}
+            <Text style={styles.bold}>Suporte:</Text> https://rumofinance.app/suporte{'\n\n'}
             Você também pode entrar em contato com a Autoridade Nacional de Proteção de Dados (ANPD)
             em: https://www.gov.br/anpd
           </Text>
         </Section>
 
         <View style={styles.footer}>
-          <TouchableOpacity onPress={() => Linking.openURL('https://agrofinance.app/termos')}>
+          <TouchableOpacity onPress={() => Linking.openURL('https://rumofinance.app/termos')}>
             <Text style={styles.link}>Ver Termos de Uso</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => Linking.openURL('https://agrofinance.app/suporte')}
+            onPress={() => Linking.openURL('https://rumofinance.app/suporte')}
             style={styles.footerButton}
           >
             <Text style={styles.link}>Central de Suporte</Text>

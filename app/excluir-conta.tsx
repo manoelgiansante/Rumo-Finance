@@ -58,7 +58,7 @@ export default function ExcluirContaScreen() {
   };
 
   const handleEmailSupport = () => {
-    Linking.openURL('mailto:dpo@agrofinance.app?subject=Solicitação de Exclusão de Conta');
+    Linking.openURL('mailto:dpo@rumofinance.app?subject=Solicitação de Exclusão de Conta');
   };
 
   if (submitted) {

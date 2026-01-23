@@ -4,12 +4,12 @@
 
 | Campo                 | Valor                               |
 | --------------------- | ----------------------------------- |
-| **Nome do App**       | AgroFinance - Gestão Rural          |
-| **Bundle ID (iOS)**   | com.agrofinance.app                 |
-| **Package (Android)** | com.agrofinance.app                 |
-| **Empresa**           | AgroFinance Tecnologia Ltda         |
-| **E-mail de Contato** | contato@agrofinance.app             |
-| **E-mail DPO**        | dpo@agrofinance.app                 |
+| **Nome do App**       | Rumo Finance - Gestão Rural         |
+| **Bundle ID (iOS)**   | com.rumofinance.app                 |
+| **Package (Android)** | com.rumofinance.app                 |
+| **Empresa**           | Rumo Finance Tecnologia Ltda        |
+| **E-mail de Contato** | contato@rumofinance.app             |
+| **E-mail DPO**        | dpo@rumofinance.app                 |
 | **Website**           | https://finance.agrorumo.com        |
 | **Categoria**         | Finanças / Negócios / Produtividade |
 
@@ -28,9 +28,9 @@
 
 ## 🏢 Sobre a Empresa/App
 
-### O que é o AgroFinance?
+### O que é o Rumo Finance?
 
-O AgroFinance é uma plataforma completa de **gestão financeira e operacional para propriedades rurais** desenvolvida para produtores rurais, gestores de fazendas e contadores agrícolas no Brasil.
+O Rumo Finance é uma plataforma completa de **gestão financeira e operacional para propriedades rurais** desenvolvida para produtores rurais, gestores de fazendas e contadores agrícolas no Brasil.
 
 ### O que fazemos?
 
@@ -151,7 +151,7 @@ O AgroFinance é uma plataforma completa de **gestão financeira e operacional p
 
 1. **Dentro do app**: Perfil > Excluir Conta
 2. **Via web**: https://finance.agrorumo.com/excluir-conta
-3. **Por e-mail**: dpo@agrofinance.app
+3. **Por e-mail**: dpo@rumofinance.app
 
 ### Prazo de exclusão
 
@@ -272,7 +272,7 @@ Gestão financeira completa para fazendas. Controle despesas, receitas e estoque
 ### Descrição Longa
 
 ```
-AgroFinance é o app completo de gestão financeira para produtores rurais.
+Rumo Finance é o app completo de gestão financeira para produtores rurais.
 
 ✅ CONTROLE FINANCEIRO
 • Registre despesas e receitas
@@ -323,7 +323,7 @@ agro, fazenda, gestão rural, finanças, agricultura, pecuária, nfe, controle, 
 
 | Campo                   | Valor                                    |
 | ----------------------- | ---------------------------------------- |
-| **E-mail de suporte**   | suporte@agrofinance.app                  |
+| **E-mail de suporte**   | suporte@rumofinance.app                  |
 | **URL de suporte**      | https://finance.agrorumo.com/suporte     |
 | **URL de Privacidade**  | https://finance.agrorumo.com/privacidade |
 | **URL de Marketing**    | https://finance.agrorumo.com             |

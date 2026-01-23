@@ -3,8 +3,8 @@
 ## 📱 Informações Básicas do App
 
 **Nome**: Agrofinance Gestão Rural
-**Bundle ID iOS**: app.rork.agrofinance-gestao-rural
-**Package Android**: app.rork.agrofinance_gestao_rural
+**Bundle ID iOS**: app.rork.rumofinance-gestao-rural
+**Package Android**: app.rork.rumofinance_gestao_rural
 **Versão**: 1.0.0
 **Categoria**: Finanças / Negócios / Produtividade Agrícola
 **Público-alvo**: Produtores rurais, gestores de fazendas, contadores agrícolas no Brasil
@@ -513,11 +513,11 @@ SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 {
   "expo": {
     "name": "Agrofinance Gestão Rural",
-    "slug": "agrofinance-gestao-rural",
+    "slug": "rumofinance-gestao-rural",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "agrofinance",
+    "scheme": "rumofinance",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
@@ -527,7 +527,7 @@ SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "app.rork.agrofinance-gestao-rural",
+      "bundleIdentifier": "app.rork.rumofinance-gestao-rural",
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "O Agrofinance precisa acessar suas fotos para anexar comprovantes de despesas e notas fiscais.",
         "NSCameraUsageDescription": "O Agrofinance precisa acessar sua câmera para fotografar notas fiscais e documentos.",
@@ -539,7 +539,7 @@ SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "app.rork.agrofinance_gestao_rural",
+      "package": "app.rork.rumofinance_gestao_rural",
       "permissions": ["CAMERA", "READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE"]
     },
     "plugins": [

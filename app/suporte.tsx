@@ -94,7 +94,7 @@ export default function SuporteScreen() {
   };
 
   const handleEmail = () => {
-    Linking.openURL('mailto:suporte@agrofinance.app');
+    Linking.openURL('mailto:suporte@rumofinance.app');
   };
 
   const handlePhone = () => {
@@ -113,7 +113,7 @@ export default function SuporteScreen() {
 
     const emailBody = `Nome: ${formData.name}\nEmail: ${formData.email}\n\nAssunto: ${formData.subject}\n\nMensagem:\n${formData.message}`;
     Linking.openURL(
-      `mailto:suporte@agrofinance.app?subject=${encodeURIComponent(formData.subject)}&body=${encodeURIComponent(emailBody)}`
+      `mailto:suporte@rumofinance.app?subject=${encodeURIComponent(formData.subject)}&body=${encodeURIComponent(emailBody)}`
     );
 
     Alert.alert('Solicitação enviada', 'Entraremos em contato em breve!');
@@ -144,7 +144,7 @@ export default function SuporteScreen() {
             <TouchableOpacity style={styles.contactCard} onPress={handleEmail}>
               <Mail size={28} color={Colors.primary} />
               <Text style={styles.contactLabel}>Email</Text>
-              <Text style={styles.contactValue}>suporte@agrofinance.app</Text>
+              <Text style={styles.contactValue}>suporte@rumofinance.app</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.contactCard} onPress={handlePhone}>
@@ -161,7 +161,7 @@ export default function SuporteScreen() {
 
             <TouchableOpacity
               style={styles.contactCard}
-              onPress={() => Linking.openURL('https://docs.agrofinance.app')}
+              onPress={() => Linking.openURL('https://docs.rumofinance.app')}
             >
               <FileText size={28} color={Colors.primary} />
               <Text style={styles.contactLabel}>Documentação</Text>
