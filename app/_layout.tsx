@@ -55,6 +55,9 @@ function RootLayoutNav() {
             <Stack.Screen name="forecast" />
             <Stack.Screen name="closing" />
             <Stack.Screen name="suporte" />
+            <Stack.Screen name="privacidade" />
+            <Stack.Screen name="termos" />
+            <Stack.Screen name="excluir-conta" />
           </Stack>
         </View>
       </View>
@@ -109,6 +112,10 @@ function RootLayoutNav() {
       />
       <Stack.Screen name="profile" options={{ title: 'Perfil' }} />
       <Stack.Screen name="purchase-orders" options={{ title: 'Pedidos de Compra' }} />
+      <Stack.Screen name="privacidade" options={{ title: 'Política de Privacidade' }} />
+      <Stack.Screen name="termos" options={{ title: 'Termos de Uso' }} />
+      <Stack.Screen name="excluir-conta" options={{ title: 'Exclusão de Conta' }} />
+      <Stack.Screen name="suporte" options={{ title: 'Suporte' }} />
     </Stack>
   );
 }
