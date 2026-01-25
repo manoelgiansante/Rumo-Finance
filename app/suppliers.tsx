@@ -23,9 +23,10 @@ import {
   Trash2,
 } from 'lucide-react-native';
 import Colors from '@/constants/colors';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Supplier {
   id: string;
@@ -295,6 +296,7 @@ export default function SuppliersScreen() {
 
 function SupplierForm({ supplier, onClose }: { supplier: Supplier | null; onClose: () => void }) {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     name: supplier?.name || '',
     cpfCnpj: supplier?.cpfCnpj || '',
@@ -310,6 +312,10 @@ function SupplierForm({ supplier, onClose }: { supplier: Supplier | null; onClos
 
   const saveMutation = useMutation({
     mutationFn: async () => {
+      if (!user?.id) {
+        throw new Error('Usuário não autenticado');
+      }
+
       const data: Record<string, any> = {
         name: formData.name,
         cpf_cnpj: formData.cpfCnpj,
@@ -321,6 +327,7 @@ function SupplierForm({ supplier, onClose }: { supplier: Supplier | null; onClos
         city: formData.city || null,
         state: formData.state || null,
         active: formData.active,
+        user_id: user.id,
       };
 
       if (supplier) {
@@ -334,6 +341,14 @@ function SupplierForm({ supplier, onClose }: { supplier: Supplier | null; onClos
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['suppliers'] });
       onClose();
+    },
+    onError: (error: any) => {
+      console.error('Erro ao salvar fornecedor:', error);
+      if (Platform.OS === 'web') {
+        alert('Erro ao salvar: ' + (error.message || 'Erro desconhecido'));
+      } else {
+        Alert.alert('Erro', 'Erro ao salvar: ' + (error.message || 'Erro desconhecido'));
+      }
     },
   });
 
@@ -382,6 +397,7 @@ function SupplierForm({ supplier, onClose }: { supplier: Supplier | null; onClos
               placeholderTextColor={Colors.textTertiary}
               value={formData.name}
               onChangeText={(text) => setFormData({ ...formData, name: text })}
+              returnKeyType="done"
             />
           </View>
 
@@ -432,6 +448,7 @@ function SupplierForm({ supplier, onClose }: { supplier: Supplier | null; onClos
                 value={formData.cpfCnpj}
                 onChangeText={(text) => setFormData({ ...formData, cpfCnpj: text })}
                 keyboardType="numeric"
+                returnKeyType="done"
               />
             </View>
           </View>
@@ -444,6 +461,7 @@ function SupplierForm({ supplier, onClose }: { supplier: Supplier | null; onClos
               placeholderTextColor={Colors.textTertiary}
               value={formData.category}
               onChangeText={(text) => setFormData({ ...formData, category: text })}
+              returnKeyType="done"
             />
           </View>
 
@@ -457,6 +475,7 @@ function SupplierForm({ supplier, onClose }: { supplier: Supplier | null; onClos
               onChangeText={(text) => setFormData({ ...formData, email: text })}
               keyboardType="email-address"
               autoCapitalize="none"
+              returnKeyType="done"
             />
           </View>
 
@@ -469,6 +488,7 @@ function SupplierForm({ supplier, onClose }: { supplier: Supplier | null; onClos
               value={formData.phone}
               onChangeText={(text) => setFormData({ ...formData, phone: text })}
               keyboardType="phone-pad"
+              returnKeyType="done"
             />
           </View>
 
@@ -480,6 +500,7 @@ function SupplierForm({ supplier, onClose }: { supplier: Supplier | null; onClos
               placeholderTextColor={Colors.textTertiary}
               value={formData.address}
               onChangeText={(text) => setFormData({ ...formData, address: text })}
+              returnKeyType="done"
             />
           </View>
 
@@ -492,6 +513,7 @@ function SupplierForm({ supplier, onClose }: { supplier: Supplier | null; onClos
                 placeholderTextColor={Colors.textTertiary}
                 value={formData.city}
                 onChangeText={(text) => setFormData({ ...formData, city: text })}
+                returnKeyType="done"
               />
             </View>
 
@@ -505,6 +527,7 @@ function SupplierForm({ supplier, onClose }: { supplier: Supplier | null; onClos
                 onChangeText={(text) => setFormData({ ...formData, state: text.toUpperCase() })}
                 maxLength={2}
                 autoCapitalize="characters"
+                returnKeyType="done"
               />
             </View>
           </View>
