@@ -1,5 +1,5 @@
 /**
- * Utilitários de formatação para o Agrofinance
+ * Utilitários de formatação para o Rumo Finance
  */
 
 // Formatar valor monetário brasileiro

@@ -13,6 +13,7 @@ import {
   TeamMember,
   Farm,
   Asset,
+  Supplier,
   StockItem,
   BankAccount,
   Category,
@@ -26,6 +27,7 @@ interface AppContextValue {
   operations: Operation[];
   revenues: Revenue[];
   clients: Client[];
+  suppliers: Supplier[];
   contracts: Contract[];
   purchaseOrders: PurchaseOrder[];
   teamMembers: TeamMember[];
@@ -232,6 +234,31 @@ export const [AppProvider, useApp] = createContextHook<AppContextValue>(() => {
         );
       } catch (err) {
         console.error('Error loading clients:', err);
+        return [];
+      }
+    },
+  });
+
+  const { data: suppliers = [] } = useQuery<Supplier[]>({
+    queryKey: ['suppliers'],
+    queryFn: async () => {
+      try {
+        const { data, error } = await supabase.from('suppliers').select('*').order('name');
+        if (error) {
+          console.error('Error loading suppliers:', error.message || error);
+          return [];
+        }
+        if (!data) return [];
+        return data.map(
+          (s: any): Supplier => ({
+            id: s.id,
+            name: s.name,
+            cpfCnpj: s.cpf_cnpj,
+            category: s.category || '',
+          })
+        );
+      } catch (err) {
+        console.error('Error loading suppliers:', err);
         return [];
       }
     },
@@ -650,12 +677,66 @@ export const [AppProvider, useApp] = createContextHook<AppContextValue>(() => {
     queryClient.invalidateQueries();
   };
 
+  const addFarmMutation = useMutation({
+    mutationFn: async (farm: Omit<Farm, 'id'>) => {
+      const insertData: any = {
+        name: farm.name,
+        cpf_cnpj: farm.cpfCnpj,
+        city: farm.city,
+        state: farm.state,
+        area: farm.area || 0,
+        state_registration: farm.stateRegistration,
+        active: farm.active ?? true,
+      };
+      const { data, error } = await supabase.from('farms').insert(insertData).select().single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['farms'] });
+    },
+  });
+
+  const updateFarmMutation = useMutation({
+    mutationFn: async ({ id, updates }: { id: string; updates: Partial<Farm> }) => {
+      const updateData: any = {};
+      if (updates.name) updateData.name = updates.name;
+      if (updates.cpfCnpj) updateData.cpf_cnpj = updates.cpfCnpj;
+      if (updates.city) updateData.city = updates.city;
+      if (updates.state) updateData.state = updates.state;
+      if (updates.area !== undefined) updateData.area = updates.area;
+      if (updates.active !== undefined) updateData.active = updates.active;
+      updateData.updated_at = new Date().toISOString();
+      const result = await (supabase.from('farms') as any)
+        .update(updateData)
+        .eq('id', id)
+        .select()
+        .single();
+      if (result.error) throw result.error;
+      return result.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['farms'] });
+    },
+  });
+
+  const deleteFarmMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('farms').delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['farms'] });
+    },
+  });
+
   return {
     user,
     expenses,
     operations,
     revenues,
     clients,
+    suppliers,
     contracts,
     purchaseOrders,
     teamMembers,
@@ -701,9 +782,15 @@ export const [AppProvider, useApp] = createContextHook<AppContextValue>(() => {
     addTeamMember: async () => {},
     updateTeamMember: async () => {},
     deleteTeamMember: async () => {},
-    addFarm: async () => {},
-    updateFarm: async () => {},
-    deleteFarm: async () => {},
+    addFarm: async (farm) => {
+      await addFarmMutation.mutateAsync(farm);
+    },
+    updateFarm: async (id, updates) => {
+      await updateFarmMutation.mutateAsync({ id, updates });
+    },
+    deleteFarm: async (id) => {
+      await deleteFarmMutation.mutateAsync(id);
+    },
     addAsset: async () => {},
     updateAsset: async () => {},
     deleteAsset: async () => {},

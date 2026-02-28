@@ -16,7 +16,7 @@ import Colors from '@/constants/colors';
 import { useState } from 'react';
 
 export default function ClientsScreen() {
-  const { clients } = useApp();
+  const { clients, addClient } = useApp();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'physical' | 'legal'>('all');
   const [showModal, setShowModal] = useState(false);
@@ -45,7 +45,7 @@ export default function ClientsScreen() {
 
   const isWeb = Platform.OS === 'web';
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!formData.name.trim()) {
       Alert.alert('Erro', 'Informe o nome do cliente');
       return;
@@ -55,17 +55,31 @@ export default function ClientsScreen() {
       return;
     }
 
-    Alert.alert('Sucesso', 'Cliente cadastrado com sucesso!');
-    setShowModal(false);
-    setFormData({
-      name: '',
-      cpfCnpj: '',
-      type: 'physical',
-      email: '',
-      phone: '',
-      city: '',
-      state: 'SP',
-    });
+    try {
+      await addClient({
+        name: formData.name.trim(),
+        cpfCnpj: formData.cpfCnpj.trim(),
+        type: formData.type,
+        email: formData.email.trim() || undefined,
+        phone: formData.phone.trim() || undefined,
+        city: formData.city.trim() || undefined,
+        state: formData.state || undefined,
+        active: true,
+      } as any);
+      Alert.alert('Sucesso', 'Cliente cadastrado com sucesso!');
+      setShowModal(false);
+      setFormData({
+        name: '',
+        cpfCnpj: '',
+        type: 'physical',
+        email: '',
+        phone: '',
+        city: '',
+        state: 'SP',
+      });
+    } catch (error: any) {
+      Alert.alert('Erro', error?.message || 'Erro ao salvar cliente');
+    }
   };
 
   return (

@@ -36,57 +36,70 @@ import {
 } from 'lucide-react-native';
 import { router, usePathname } from 'expo-router';
 import Colors from '@/constants/colors';
-
-const menuSections = [
-  {
-    title: 'PRINCIPAL',
-    items: [
-      { icon: LayoutDashboard, label: 'Dashboard', route: '/' },
-      { icon: FileText, label: 'Despesas', route: '/expenses' },
-      { icon: CheckSquare, label: 'Validações', route: '/validations', badge: 3 },
-      { icon: BarChart3, label: 'Relatórios', route: '/reports' },
-    ],
-  },
-  {
-    title: 'CADASTROS',
-    items: [
-      { icon: Tractor, label: 'Fazendas', route: '/farms' },
-      { icon: Users, label: 'Fornecedores', route: '/suppliers' },
-      { icon: Users, label: 'Clientes', route: '/clients' },
-      { icon: Package, label: 'Estoque', route: '/stock' },
-    ],
-  },
-  {
-    title: 'FINANCEIRO',
-    items: [
-      { icon: TrendingUp, label: 'Receitas', route: '/revenues' },
-      { icon: DollarSign, label: 'Fluxo de Caixa', route: '/cash-flow' },
-      { icon: CreditCard, label: 'Conciliação Bancária', route: '/bank-reconciliation' },
-      { icon: BookOpen, label: 'Livro Caixa', route: '/livro-caixa' },
-      { icon: FileBarChart, label: 'DRE', route: '/dre' },
-    ],
-  },
-  {
-    title: 'OPERACIONAL',
-    items: [
-      { icon: FileText, label: 'Fiscal', route: '/fiscal' },
-      { icon: ShoppingCart, label: 'Compras', route: '/purchase-orders' },
-      { icon: Briefcase, label: 'Contratos', route: '/contracts' },
-    ],
-  },
-  {
-    title: 'PRODUÇÃO',
-    items: [
-      { icon: MapPin, label: 'Talhões', route: '/fields' },
-      { icon: Sprout, label: 'Safras', route: '/seasons' },
-      { icon: Repeat, label: 'Barter', route: '/barter' },
-      { icon: Home, label: 'Arrendamento', route: '/arrendamento' },
-    ],
-  },
-];
+import { useApp } from '@/providers/AppProvider';
 
 export default function WebSidebar() {
   const pathname = usePathname();
+  const { expenses } = useApp();
+  const pendingCount = expenses.filter(
+    (e) =>
+      e.status === 'pending_approval' ||
+      e.status === 'pending_validation' ||
+      e.status === 'disputed'
+  ).length;
+
+  const menuSections = [
+    {
+      title: 'PRINCIPAL',
+      items: [
+        { icon: LayoutDashboard, label: 'Dashboard', route: '/' },
+        { icon: FileText, label: 'Despesas', route: '/expenses' },
+        {
+          icon: CheckSquare,
+          label: 'Validações',
+          route: '/validations',
+          badge: pendingCount > 0 ? pendingCount : undefined,
+        },
+        { icon: BarChart3, label: 'Relatórios', route: '/reports' },
+      ],
+    },
+    {
+      title: 'CADASTROS',
+      items: [
+        { icon: Tractor, label: 'Fazendas', route: '/farms' },
+        { icon: Users, label: 'Fornecedores', route: '/suppliers' },
+        { icon: Users, label: 'Clientes', route: '/clients' },
+        { icon: Package, label: 'Estoque', route: '/stock' },
+      ],
+    },
+    {
+      title: 'FINANCEIRO',
+      items: [
+        { icon: TrendingUp, label: 'Receitas', route: '/revenues' },
+        { icon: DollarSign, label: 'Fluxo de Caixa', route: '/cash-flow' },
+        { icon: CreditCard, label: 'Conciliação Bancária', route: '/bank-reconciliation' },
+        { icon: BookOpen, label: 'Livro Caixa', route: '/livro-caixa' },
+        { icon: FileBarChart, label: 'DRE', route: '/dre' },
+      ],
+    },
+    {
+      title: 'OPERACIONAL',
+      items: [
+        { icon: FileText, label: 'Fiscal', route: '/fiscal' },
+        { icon: ShoppingCart, label: 'Compras', route: '/purchase-orders' },
+        { icon: Briefcase, label: 'Contratos', route: '/contracts' },
+      ],
+    },
+    {
+      title: 'PRODUÇÃO',
+      items: [
+        { icon: MapPin, label: 'Talhões', route: '/fields' },
+        { icon: Sprout, label: 'Safras', route: '/seasons' },
+        { icon: Repeat, label: 'Barter', route: '/barter' },
+        { icon: Home, label: 'Arrendamento', route: '/arrendamento' },
+      ],
+    },
+  ];
 
   if (Platform.OS !== 'web') return null;
 
@@ -109,7 +122,7 @@ export default function WebSidebar() {
             resizeMode="contain"
           />
           <View>
-            <Text style={styles.logo}>Agrofinance</Text>
+            <Text style={styles.logo}>Rumo Finance</Text>
             <Text style={styles.subtitle}>GESTÃO RURAL</Text>
           </View>
         </View>

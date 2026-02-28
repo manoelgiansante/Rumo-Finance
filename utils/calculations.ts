@@ -1,5 +1,5 @@
 /**
- * Utilitários de cálculos financeiros e agrícolas para o Agrofinance
+ * Utilitários de cálculos financeiros e agrícolas para o Rumo Finance
  */
 
 // Calcular margem bruta

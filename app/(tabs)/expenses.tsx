@@ -20,7 +20,6 @@ import {
 } from 'lucide-react-native';
 import { useApp } from '@/providers/AppProvider';
 import { useAuth } from '@/contexts/AuthContext';
-import { suppliers } from '@/mocks/data';
 import Colors from '@/constants/colors';
 import { router } from 'expo-router';
 import { useState } from 'react';
@@ -30,7 +29,7 @@ import { ptBR } from 'date-fns/locale';
 import ExcelImporter from '@/components/ExcelImporter';
 
 export default function ExpensesScreen() {
-  const { expenses, operations, refetch } = useApp();
+  const { expenses, operations, suppliers, refetch } = useApp();
   const { isPremium } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [showImporter, setShowImporter] = useState(false);

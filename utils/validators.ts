@@ -1,5 +1,5 @@
 /**
- * Utilitários de validação para o Agrofinance
+ * Utilitários de validação para o Rumo Finance
  */
 
 // Validação de CPF

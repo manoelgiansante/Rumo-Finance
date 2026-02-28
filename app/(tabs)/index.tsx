@@ -33,7 +33,7 @@ import OnboardingTutorial from '@/components/OnboardingTutorial';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function DashboardScreen() {
-  const { expenses } = useApp();
+  const { expenses, revenues } = useApp();
   const { isPremium } = useAuth();
   const [selectedPeriod, setSelectedPeriod] = useState<'month' | 'quarter' | 'year'>('month');
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -72,20 +72,65 @@ export default function DashboardScreen() {
     }
   };
 
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+
+  const monthExpenses = expenses.filter((e) => {
+    const d = new Date(e.date);
+    return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+  });
+  const monthRevenues = revenues.filter((r) => {
+    const d = new Date(r.date);
+    return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+  });
+
+  const totalMonthExpenses = monthExpenses.reduce(
+    (sum, e) => sum + (e.actualValue || e.invoiceValue || e.negotiatedValue || 0),
+    0
+  );
+  const totalMonthRevenues = monthRevenues.reduce((sum, r) => sum + (r.value || 0), 0);
+
+  const totalPaidExpenses = expenses
+    .filter((e) => e.status === 'paid')
+    .reduce((sum, e) => sum + (e.actualValue || e.invoiceValue || e.negotiatedValue || 0), 0);
+  const totalReceivedRevenues = revenues
+    .filter((r) => r.status === 'received')
+    .reduce((sum, r) => sum + (r.value || 0), 0);
+
   const stats = {
-    cashBalance: 0,
-    accountsPayable: 0,
-    accountsReceivable: 0,
+    cashBalance: totalReceivedRevenues - totalPaidExpenses,
+    accountsPayable: expenses
+      .filter((e) => e.status !== 'paid' && e.status !== 'reconciled')
+      .reduce((sum, e) => sum + (e.negotiatedValue || 0), 0),
+    accountsReceivable: revenues
+      .filter((r) => r.status !== 'received')
+      .reduce((sum, r) => sum + (r.value || 0), 0),
     pendingApprovals: expenses.filter((e) => e.status === 'pending_approval').length,
     overduePayments: expenses.filter(
       (e) => e.status === 'approved' && new Date(e.dueDate) < new Date()
     ).length,
-    monthRevenue: 0,
-    monthExpenses: 0,
-    monthResult: 0,
+    monthRevenue: totalMonthRevenues,
+    monthExpenses: totalMonthExpenses,
+    monthResult: totalMonthRevenues - totalMonthExpenses,
   };
 
-  const recentActivity: { type: 'in' | 'out'; desc: string; value: number; date: string }[] = [];
+  const recentActivity: { type: 'in' | 'out'; desc: string; value: number; date: string }[] = [
+    ...expenses.slice(0, 5).map((e) => ({
+      type: 'out' as const,
+      desc: e.description,
+      value: e.actualValue || e.negotiatedValue || 0,
+      date: new Date(e.date).toLocaleDateString('pt-BR'),
+    })),
+    ...revenues.slice(0, 5).map((r) => ({
+      type: 'in' as const,
+      desc: r.description,
+      value: r.value || 0,
+      date: new Date(r.date).toLocaleDateString('pt-BR'),
+    })),
+  ]
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .slice(0, 8);
 
   const isWeb = Platform.OS === 'web';
 

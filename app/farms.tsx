@@ -48,7 +48,7 @@ const STATES = [
 ];
 
 export default function FarmsScreen() {
-  const { farms = [] } = useApp();
+  const { farms = [], addFarm, deleteFarm } = useApp();
   const [searchQuery, setSearchQuery] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [showStateModal, setShowStateModal] = useState(false);
@@ -75,7 +75,7 @@ export default function FarmsScreen() {
   const totalArea = displayFarms.reduce((sum, f) => sum + (f.area || 0), 0);
   const isWeb = Platform.OS === 'web';
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!formData.name.trim()) {
       Alert.alert('Erro', 'Informe o nome da fazenda');
       return;
@@ -89,9 +89,22 @@ export default function FarmsScreen() {
       return;
     }
 
-    Alert.alert('Sucesso', 'Fazenda cadastrada com sucesso!');
-    setShowModal(false);
-    setFormData({ name: '', cpfCnpj: '', city: '', state: 'SP', area: '' });
+    try {
+      await addFarm({
+        name: formData.name.trim(),
+        cpfCnpj: formData.cpfCnpj.trim(),
+        city: formData.city.trim(),
+        state: formData.state,
+        area: parseFloat(formData.area) || 0,
+        active: true,
+        operations: [],
+      });
+      Alert.alert('Sucesso', 'Fazenda cadastrada com sucesso!');
+      setShowModal(false);
+      setFormData({ name: '', cpfCnpj: '', city: '', state: 'SP', area: '' });
+    } catch (error: any) {
+      Alert.alert('Erro', error?.message || 'Erro ao salvar fazenda');
+    }
   };
 
   return (
@@ -175,7 +188,14 @@ export default function FarmsScreen() {
                           {
                             text: 'Excluir',
                             style: 'destructive',
-                            onPress: () => Alert.alert('Sucesso', 'Fazenda excluída'),
+                            onPress: async () => {
+                              try {
+                                await deleteFarm(farm.id);
+                                Alert.alert('Sucesso', 'Fazenda excluída');
+                              } catch (error: any) {
+                                Alert.alert('Erro', error?.message || 'Erro ao excluir fazenda');
+                              }
+                            },
                           },
                         ]),
                     },

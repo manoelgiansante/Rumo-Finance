@@ -10,7 +10,6 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { X, FileText, AlertTriangle, CheckCircle2, Clock, DollarSign } from 'lucide-react-native';
 import { useApp } from '@/providers/AppProvider';
-import { suppliers } from '@/mocks/data';
 import Colors from '@/constants/colors';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
@@ -19,7 +18,7 @@ import { ptBR } from 'date-fns/locale';
 
 export default function ExpenseDetailsScreen() {
   const { id } = useLocalSearchParams();
-  const { expenses, operations, updateExpense, user } = useApp();
+  const { expenses, operations, suppliers, updateExpense, user } = useApp();
   const expense = expenses.find((e) => e.id === id);
 
   const [divergenceReason, setDivergenceReason] = useState('');

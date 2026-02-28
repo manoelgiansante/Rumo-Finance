@@ -371,7 +371,7 @@ export const [AuthProvider, useAuth] = createContextHook(() => {
     // Criar um perfil local demo
     const demoProfile: UserProfile = {
       id: 'demo-user',
-      email: 'demo@agrofinance.app',
+      email: 'demo@rumofinance.app',
       full_name: 'Usuário Demo',
       created_at: new Date().toISOString(),
     };
@@ -381,7 +381,7 @@ export const [AuthProvider, useAuth] = createContextHook(() => {
     const demoSubscription: Subscription = {
       id: 'demo-subscription',
       user_id: 'demo-user',
-      email: 'demo@agrofinance.app',
+      email: 'demo@rumofinance.app',
       plan: 'free',
       status: 'trial',
       starts_at: new Date().toISOString(),

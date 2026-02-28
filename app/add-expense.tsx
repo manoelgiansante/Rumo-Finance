@@ -10,7 +10,6 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { X, Camera, FileText } from 'lucide-react-native';
 import { useApp } from '@/providers/AppProvider';
-import { suppliers } from '@/mocks/data';
 import Colors from '@/constants/colors';
 import { router } from 'expo-router';
 import { useState } from 'react';
@@ -18,7 +17,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Expense, Attachment } from '@/types';
 
 export default function AddExpenseScreen() {
-  const { operations, addExpense, user } = useApp();
+  const { operations, suppliers, addExpense, user } = useApp();
   const [description, setDescription] = useState('');
   const [supplierId, setSupplier] = useState('');
   const [operationId, setOperation] = useState('');

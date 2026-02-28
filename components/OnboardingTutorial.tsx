@@ -37,7 +37,7 @@ interface TutorialStep {
 const TUTORIAL_STEPS: TutorialStep[] = [
   {
     icon: <Tractor size={48} color="#fff" />,
-    title: 'Bem-vindo ao Agrofinance!',
+    title: 'Bem-vindo ao Rumo Finance!',
     description:
       'Sua plataforma completa de gestão financeira rural. Gerencie fazendas, operações, despesas, receitas e muito mais em um só lugar.',
     color: '#2E7D32',
@@ -88,7 +88,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
     icon: <Calculator size={48} color="#fff" />,
     title: 'Custo Operacional Grátis!',
     description:
-      'Assinantes do plano Intermediário ou superior ganham acesso gratuito ao app Agrofinance Custo Operacional Rural!',
+      'Assinantes do plano Intermediário ou superior ganham acesso gratuito ao app Rumo Custo Operacional Rural!',
     color: '#9C27B0',
   },
 ];
@@ -160,7 +160,7 @@ export default function OnboardingTutorial({ visible, onComplete }: OnboardingTu
 
   const handleComplete = async () => {
     try {
-      await AsyncStorage.setItem('@agrofinance_tutorial_seen', 'true');
+      await AsyncStorage.setItem('@rumofinance_tutorial_seen', 'true');
     } catch (error) {
       console.error('Error saving tutorial state:', error);
     }
@@ -169,7 +169,7 @@ export default function OnboardingTutorial({ visible, onComplete }: OnboardingTu
 
   const handleSkip = async () => {
     try {
-      await AsyncStorage.setItem('@agrofinance_tutorial_seen', 'true');
+      await AsyncStorage.setItem('@rumofinance_tutorial_seen', 'true');
     } catch (error) {
       console.error('Error saving tutorial state:', error);
     }
@@ -263,7 +263,7 @@ export function useTutorial() {
 
   const checkTutorialStatus = async () => {
     try {
-      const seen = await AsyncStorage.getItem('@agrofinance_tutorial_seen');
+      const seen = await AsyncStorage.getItem('@rumofinance_tutorial_seen');
       setShowTutorial(seen !== 'true');
     } catch (error) {
       console.error('Error checking tutorial status:', error);
@@ -279,7 +279,7 @@ export function useTutorial() {
 
   const resetTutorial = async () => {
     try {
-      await AsyncStorage.removeItem('@agrofinance_tutorial_seen');
+      await AsyncStorage.removeItem('@rumofinance_tutorial_seen');
       setShowTutorial(true);
     } catch (error) {
       console.error('Error resetting tutorial:', error);

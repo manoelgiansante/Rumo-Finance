@@ -2,21 +2,71 @@ import { StyleSheet, Text, View, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { TrendingUp, TrendingDown } from 'lucide-react-native';
 import { useApp } from '@/providers/AppProvider';
-import { monthlyResults } from '@/mocks/data';
 import Colors from '@/constants/colors';
 
 export default function ReportsScreen() {
-  const { operations } = useApp();
+  const { expenses, revenues, operations } = useApp();
 
-  const totalRevenue = monthlyResults.reduce((sum, r) => sum + r.revenue, 0);
-  const totalExpenses = monthlyResults.reduce((sum, r) => sum + r.expenses, 0);
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+  const monthNames = [
+    'Janeiro',
+    'Fevereiro',
+    'Março',
+    'Abril',
+    'Maio',
+    'Junho',
+    'Julho',
+    'Agosto',
+    'Setembro',
+    'Outubro',
+    'Novembro',
+    'Dezembro',
+  ];
+
+  const monthExpenses = expenses.filter((e) => {
+    const d = new Date(e.date);
+    return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+  });
+  const monthRevenues = revenues.filter((r) => {
+    const d = new Date(r.date);
+    return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+  });
+
+  const totalRevenue = monthRevenues.reduce((sum, r) => sum + (r.value || 0), 0);
+  const totalExpenses = monthExpenses.reduce(
+    (sum, e) => sum + (e.actualValue || e.invoiceValue || e.negotiatedValue || 0),
+    0
+  );
   const totalResult = totalRevenue - totalExpenses;
+
+  // Group by operation
+  const operationResults = operations
+    .map((op) => {
+      const opExpenses = monthExpenses.filter((e) => e.operationId === op.id);
+      const opRevenues = monthRevenues.filter((r) => r.operationId === op.id);
+      const opTotalExpenses = opExpenses.reduce(
+        (sum, e) => sum + (e.actualValue || e.invoiceValue || e.negotiatedValue || 0),
+        0
+      );
+      const opTotalRevenue = opRevenues.reduce((sum, r) => sum + (r.value || 0), 0);
+      return {
+        operationId: op.id,
+        month: `${monthNames[currentMonth]} ${currentYear}`,
+        revenue: opTotalRevenue,
+        expenses: opTotalExpenses,
+        result: opTotalRevenue - opTotalExpenses,
+        expensesByCategory: [] as { category: string; amount: number }[],
+      };
+    })
+    .filter((r) => r.revenue > 0 || r.expenses > 0);
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
         <Text style={styles.title}>Relatórios</Text>
-        <Text style={styles.subtitle}>Janeiro 2025</Text>
+        <Text style={styles.subtitle}>{`${monthNames[currentMonth]} ${currentYear}`}</Text>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -62,7 +112,7 @@ export default function ReportsScreen() {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Por Operação</Text>
-          {monthlyResults.map((result) => {
+          {operationResults.map((result) => {
             const operation = operations.find((o) => o.id === result.operationId);
             if (!operation) return null;
 

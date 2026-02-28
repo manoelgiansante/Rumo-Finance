@@ -73,7 +73,7 @@ export default function ProfileScreen() {
         </View>
 
         <View style={styles.versionContainer}>
-          <Text style={styles.versionText}>Agrofinance v1.0.0</Text>
+          <Text style={styles.versionText}>Rumo Finance v1.0.0</Text>
         </View>
       </ScrollView>
     </SafeAreaView>

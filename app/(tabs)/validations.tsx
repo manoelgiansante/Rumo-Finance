@@ -2,13 +2,12 @@ import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-nati
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AlertTriangle, Clock, CheckCircle2, FileText } from 'lucide-react-native';
 import { useApp } from '@/providers/AppProvider';
-import { suppliers } from '@/mocks/data';
 import Colors from '@/constants/colors';
 import { router } from 'expo-router';
 import { format } from 'date-fns';
 
 export default function ValidationsScreen() {
-  const { expenses, operations } = useApp();
+  const { expenses, operations, suppliers } = useApp();
 
   const pendingApproval = expenses.filter((e) => e.status === 'pending_approval');
   const pendingValidation = expenses.filter((e) => e.status === 'pending_validation');
