@@ -7,6 +7,7 @@ import {
   TextInput,
   Platform,
   Modal,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, router } from 'expo-router';
@@ -15,23 +16,20 @@ import {
   Search,
   Plus,
   Download,
-  Upload,
   FileText,
   Calendar,
   TrendingUp,
   TrendingDown,
   Filter,
   Share2,
-  Printer,
   CheckCircle2,
   Clock,
-  AlertCircle,
   BookOpen,
   Send,
-  Eye,
 } from 'lucide-react-native';
 import Colors from '@/constants/colors';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import { useApp } from '@/providers/AppProvider';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -55,8 +53,6 @@ interface LivroCaixaEntry {
   sentAt?: Date;
 }
 
-const mockEntries: LivroCaixaEntry[] = [];
-
 const STATUS_CONFIG = {
   draft: { label: 'Rascunho', color: Colors.textTertiary, icon: FileText },
   validated: { label: 'Validado', color: Colors.success, icon: CheckCircle2 },
@@ -78,6 +74,7 @@ const CATEGORIES = [
 const OPERATIONS = ['Confinamento', 'Cana', 'Soja', 'Milho', 'Sede', 'Compostagem', 'Geral'];
 
 export default function LivroCaixaScreen() {
+  const { expenses, revenues, operations } = useApp();
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState<EntryType | 'all'>('all');
   const [statusFilter, setStatusFilter] = useState<EntryStatus | 'all'>('all');
@@ -85,7 +82,45 @@ export default function LivroCaixaScreen() {
   const [showExportModal, setShowExportModal] = useState(false);
   const [selectedEntries, setSelectedEntries] = useState<string[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [entries, setEntries] = useState<LivroCaixaEntry[]>(mockEntries);
+
+  // Build entries from real expenses and revenues
+  const derivedEntries: LivroCaixaEntry[] = useMemo(() => {
+    const items: LivroCaixaEntry[] = [];
+    revenues.forEach((rev) => {
+      const op = operations.find((o) => o.id === rev.operationId);
+      items.push({
+        id: rev.id,
+        date: rev.date instanceof Date ? rev.date : new Date(rev.date),
+        document: 'Receita',
+        description: rev.description,
+        type: 'receita',
+        category: rev.category || 'Venda Produção',
+        value: rev.value,
+        operation: op?.name || 'Geral',
+        status: rev.status === 'received' ? 'validated' : 'draft',
+      });
+    });
+    expenses.forEach((exp) => {
+      const op = operations.find((o) => o.id === exp.operationId);
+      items.push({
+        id: exp.id,
+        date: exp.date instanceof Date ? exp.date : new Date(exp.date),
+        document: 'Despesa',
+        description: exp.description,
+        type: 'despesa',
+        category: exp.category || 'Insumos',
+        value: exp.negotiatedValue || exp.actualValue || 0,
+        operation: op?.name || 'Geral',
+        status: exp.status === 'paid' ? 'validated' : 'draft',
+      });
+    });
+    items.sort((a, b) => b.date.getTime() - a.date.getTime());
+    return items;
+  }, [expenses, revenues, operations]);
+
+  const [manualEntries, setManualEntries] = useState<LivroCaixaEntry[]>([]);
+  const entries = [...derivedEntries, ...manualEntries];
+
   const [showCategoryPicker, setShowCategoryPicker] = useState(false);
   const [showOperationPicker, setShowOperationPicker] = useState(false);
   const [formData, setFormData] = useState({
@@ -133,7 +168,7 @@ export default function LivroCaixaScreen() {
 
   const sendToAccountant = () => {
     // Simular envio para contador
-    alert(`${selectedEntries.length} lançamentos enviados para o contador!`);
+    Alert.alert('Enviado', `${selectedEntries.length} lançamentos enviados para o contador!`);
     setSelectedEntries([]);
   };
 
@@ -153,15 +188,15 @@ export default function LivroCaixaScreen() {
 
   const handleSaveEntry = () => {
     if (!formData.description.trim()) {
-      alert('Informe a descrição do lançamento');
+      Alert.alert('Erro', 'Informe a descrição do lançamento');
       return;
     }
     if (!formData.category) {
-      alert('Selecione uma categoria');
+      Alert.alert('Erro', 'Selecione uma categoria');
       return;
     }
     if (!formData.value) {
-      alert('Informe o valor');
+      Alert.alert('Erro', 'Informe o valor');
       return;
     }
 
@@ -178,10 +213,10 @@ export default function LivroCaixaScreen() {
       observation: formData.observation,
     };
 
-    setEntries([newEntry, ...entries]);
+    setManualEntries([newEntry, ...manualEntries]);
     setShowAddModal(false);
     resetForm();
-    alert('Lançamento adicionado com sucesso!');
+    Alert.alert('Sucesso', 'Lançamento adicionado!');
   };
 
   return (

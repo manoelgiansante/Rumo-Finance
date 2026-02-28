@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   TextInput,
   Platform,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Plus, Search, FileText, CheckCircle2, XCircle, Calendar } from 'lucide-react-native';
@@ -58,7 +59,13 @@ export default function ContractsScreen() {
             <Text style={styles.title}>Contratos</Text>
             <Text style={styles.subtitle}>Gestão de Contratos</Text>
           </View>
-          <TouchableOpacity style={styles.addButton} activeOpacity={0.7}>
+          <TouchableOpacity
+            style={styles.addButton}
+            activeOpacity={0.7}
+            onPress={() =>
+              Alert.alert('Novo Contrato', 'A criação de contratos estará disponível em breve.')
+            }
+          >
             <Plus size={24} color={Colors.white} />
           </TouchableOpacity>
         </View>

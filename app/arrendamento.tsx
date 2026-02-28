@@ -1,4 +1,12 @@
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Platform } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  TouchableOpacity,
+  Platform,
+  Alert,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, router } from 'expo-router';
 import {
@@ -137,7 +145,16 @@ export default function ArrendamentoScreen() {
               <Text style={styles.title}>Contratos de Arrendamento</Text>
               <Text style={styles.subtitle}>Gestão de áreas arrendadas</Text>
             </View>
-            <TouchableOpacity style={styles.addButton} onPress={() => {}} activeOpacity={0.7}>
+            <TouchableOpacity
+              style={styles.addButton}
+              onPress={() =>
+                Alert.alert(
+                  'Novo Arrendamento',
+                  'A criação de contratos de arrendamento estará disponível em breve.'
+                )
+              }
+              activeOpacity={0.7}
+            >
               <Plus size={20} color={Colors.white} />
               <Text style={styles.addButtonText}>Novo</Text>
             </TouchableOpacity>

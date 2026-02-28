@@ -1,29 +1,29 @@
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { User, LogOut, Settings, HelpCircle, Shield } from 'lucide-react-native';
-import { useApp } from '@/providers/AppProvider';
+import { User, LogOut, Settings, HelpCircle, Shield, LogIn } from 'lucide-react-native';
+import { useAuth } from '@/contexts/AuthContext';
 import Colors from '@/constants/colors';
+import { router } from 'expo-router';
 
 export default function ProfileScreen() {
-  const { user } = useApp();
+  const { profile, isAuthenticated, signOut } = useAuth();
 
-  const getRoleLabel = (role: string) => {
-    switch (role) {
-      case 'admin':
-        return 'Administrador';
-      case 'field':
-        return 'Campo';
-      case 'approver':
-        return 'Aprovador';
-      case 'financial':
-        return 'Financeiro';
-      case 'accountant':
-        return 'Contador';
-      case 'auditor':
-        return 'Auditor';
-      default:
-        return role;
-    }
+  const handleLogout = async () => {
+    Alert.alert('Sair', 'Deseja realmente sair da sua conta?', [
+      { text: 'Cancelar', style: 'cancel' },
+      {
+        text: 'Sair',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await signOut();
+            router.replace('/login');
+          } catch {
+            Alert.alert('Erro', 'Não foi possível sair');
+          }
+        },
+      },
+    ]);
   };
 
   return (
@@ -39,25 +39,35 @@ export default function ProfileScreen() {
               <User size={40} color={Colors.white} />
             </View>
           </View>
-          <Text style={styles.userName}>{user.name}</Text>
-          <Text style={styles.userEmail}>{user.email}</Text>
-          <View style={styles.roleBadge}>
-            <Shield size={14} color={Colors.primary} />
-            <Text style={styles.roleText}>{getRoleLabel(user.role)}</Text>
-          </View>
+          <Text style={styles.userName}>{profile?.full_name || 'Usuário'}</Text>
+          <Text style={styles.userEmail}>{profile?.email || 'Modo Offline'}</Text>
+          {isAuthenticated && (
+            <View style={styles.roleBadge}>
+              <Shield size={14} color={Colors.primary} />
+              <Text style={styles.roleText}>Administrador</Text>
+            </View>
+          )}
         </View>
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Configurações</Text>
 
-          <TouchableOpacity style={styles.menuItem} activeOpacity={0.7}>
+          <TouchableOpacity
+            style={styles.menuItem}
+            activeOpacity={0.7}
+            onPress={() => router.push('/settings')}
+          >
             <View style={styles.menuIconContainer}>
               <Settings size={20} color={Colors.textPrimary} />
             </View>
             <Text style={styles.menuText}>Preferências</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.menuItem} activeOpacity={0.7}>
+          <TouchableOpacity
+            style={styles.menuItem}
+            activeOpacity={0.7}
+            onPress={() => router.push('/help')}
+          >
             <View style={styles.menuIconContainer}>
               <HelpCircle size={20} color={Colors.textPrimary} />
             </View>
@@ -66,10 +76,25 @@ export default function ProfileScreen() {
         </View>
 
         <View style={styles.section}>
-          <TouchableOpacity style={styles.logoutButton} activeOpacity={0.7}>
-            <LogOut size={20} color={Colors.error} />
-            <Text style={styles.logoutText}>Sair</Text>
-          </TouchableOpacity>
+          {isAuthenticated ? (
+            <TouchableOpacity
+              style={styles.logoutButton}
+              activeOpacity={0.7}
+              onPress={handleLogout}
+            >
+              <LogOut size={20} color={Colors.error} />
+              <Text style={styles.logoutText}>Sair</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={[styles.logoutButton, { borderColor: Colors.primary }]}
+              activeOpacity={0.7}
+              onPress={() => router.push('/login')}
+            >
+              <LogIn size={20} color={Colors.primary} />
+              <Text style={[styles.logoutText, { color: Colors.primary }]}>Fazer Login</Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         <View style={styles.versionContainer}>

@@ -125,6 +125,14 @@ export default function ExpenseDetailsScreen() {
               <Text style={[styles.statusText, { color: Colors.info }]}>Aguardando Aprovação</Text>
             </View>
           )}
+          {expense.status === 'pending_validation' && (
+            <View style={[styles.statusBadge, { backgroundColor: Colors.warning + '15' }]}>
+              <Clock size={20} color={Colors.warning} />
+              <Text style={[styles.statusText, { color: Colors.warning }]}>
+                Aguardando Validação
+              </Text>
+            </View>
+          )}
         </View>
 
         <View style={styles.section}>
@@ -229,15 +237,16 @@ export default function ExpenseDetailsScreen() {
           </View>
         )}
 
-        {!showDivergenceForm && expense.status === 'pending_approval' && (
-          <TouchableOpacity
-            style={styles.divergenceButton}
-            onPress={() => setShowDivergenceForm(true)}
-          >
-            <AlertTriangle size={20} color={Colors.error} />
-            <Text style={styles.divergenceButtonText}>Marcar Divergência</Text>
-          </TouchableOpacity>
-        )}
+        {!showDivergenceForm &&
+          (expense.status === 'pending_approval' || expense.status === 'pending_validation') && (
+            <TouchableOpacity
+              style={styles.divergenceButton}
+              onPress={() => setShowDivergenceForm(true)}
+            >
+              <AlertTriangle size={20} color={Colors.error} />
+              <Text style={styles.divergenceButtonText}>Marcar Divergência</Text>
+            </TouchableOpacity>
+          )}
 
         {showDivergenceForm && (
           <View style={styles.divergenceForm}>
@@ -268,14 +277,15 @@ export default function ExpenseDetailsScreen() {
         <View style={{ height: 100 }} />
       </ScrollView>
 
-      {expense.status === 'pending_approval' && !showDivergenceForm && (
-        <View style={styles.footer}>
-          <TouchableOpacity style={styles.approveButton} onPress={handleApprove}>
-            <CheckCircle2 size={20} color={Colors.white} />
-            <Text style={styles.approveButtonText}>Aprovar</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+      {(expense.status === 'pending_approval' || expense.status === 'pending_validation') &&
+        !showDivergenceForm && (
+          <View style={styles.footer}>
+            <TouchableOpacity style={styles.approveButton} onPress={handleApprove}>
+              <CheckCircle2 size={20} color={Colors.white} />
+              <Text style={styles.approveButtonText}>Aprovar</Text>
+            </TouchableOpacity>
+          </View>
+        )}
 
       {expense.status === 'approved' && (
         <View style={styles.footer}>

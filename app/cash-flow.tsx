@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Modal } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Modal, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, router } from 'expo-router';
 import {
@@ -13,7 +13,8 @@ import {
   FileSpreadsheet,
 } from 'lucide-react-native';
 import Colors from '@/constants/colors';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import { useApp } from '@/providers/AppProvider';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -27,9 +28,8 @@ interface CashFlowItem {
   operation: string;
 }
 
-const mockCashFlow: CashFlowItem[] = [];
-
 export default function CashFlowScreen() {
+  const { expenses, revenues, operations } = useApp();
   const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month'>('month');
   const [showImportModal, setShowImportModal] = useState(false);
   const [showNewModal, setShowNewModal] = useState(false);
@@ -39,11 +39,55 @@ export default function CashFlowScreen() {
     value: '',
     category: '',
   });
-  const currentBalance = 0;
-  const projectedInflows = mockCashFlow
+
+  // Build cash flow from real expenses and revenues
+  const cashFlowItems: CashFlowItem[] = useMemo(() => {
+    const items: CashFlowItem[] = [];
+
+    revenues.forEach((rev) => {
+      const op = operations.find((o) => o.id === rev.operationId);
+      const date = rev.date instanceof Date ? rev.date : new Date(rev.date);
+      items.push({
+        date,
+        description: rev.description,
+        type: 'in',
+        value: rev.value,
+        status: rev.status === 'received' ? 'realized' : 'projected',
+        category: rev.category || 'Receita',
+        operation: op?.name || 'Geral',
+      });
+    });
+
+    expenses.forEach((exp) => {
+      const op = operations.find((o) => o.id === exp.operationId);
+      const date = exp.date instanceof Date ? exp.date : new Date(exp.date);
+      items.push({
+        date,
+        description: exp.description,
+        type: 'out',
+        value: exp.negotiatedValue || exp.actualValue || 0,
+        status: exp.status === 'paid' ? 'realized' : 'projected',
+        category: exp.category || 'Despesa',
+        operation: op?.name || 'Geral',
+      });
+    });
+
+    items.sort((a, b) => b.date.getTime() - a.date.getTime());
+    return items;
+  }, [expenses, revenues, operations]);
+
+  const realizedInflows = cashFlowItems
+    .filter((i) => i.type === 'in' && i.status === 'realized')
+    .reduce((sum, i) => sum + i.value, 0);
+  const realizedOutflows = cashFlowItems
+    .filter((i) => i.type === 'out' && i.status === 'realized')
+    .reduce((sum, i) => sum + i.value, 0);
+  const currentBalance = realizedInflows - realizedOutflows;
+
+  const projectedInflows = cashFlowItems
     .filter((i) => i.type === 'in' && i.status === 'projected')
     .reduce((sum, i) => sum + i.value, 0);
-  const projectedOutflows = mockCashFlow
+  const projectedOutflows = cashFlowItems
     .filter((i) => i.type === 'out' && i.status === 'projected')
     .reduce((sum, i) => sum + i.value, 0);
   const projectedBalance = currentBalance + projectedInflows - projectedOutflows;
@@ -51,7 +95,7 @@ export default function CashFlowScreen() {
   const handleImportData = (type: string) => {
     setShowImportModal(false);
     // Simular importação
-    alert(`Importação de ${type} iniciada!`);
+    Alert.alert('Importação', `Importação de ${type} iniciada!`);
   };
 
   return (
@@ -167,7 +211,18 @@ export default function CashFlowScreen() {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Movimentações</Text>
-          {mockCashFlow.map((item, index) => {
+          {cashFlowItems.length === 0 && (
+            <View style={{ alignItems: 'center', paddingVertical: 40 }}>
+              <FileText size={48} color={Colors.textTertiary} />
+              <Text style={{ fontSize: 16, color: Colors.textSecondary, marginTop: 12 }}>
+                Nenhuma movimentação
+              </Text>
+              <Text style={{ fontSize: 13, color: Colors.textTertiary, marginTop: 4 }}>
+                Adicione receitas e despesas para ver o fluxo
+              </Text>
+            </View>
+          )}
+          {cashFlowItems.map((item, index) => {
             const isInflow = item.type === 'in';
             const isRealized = item.status === 'realized';
 
@@ -423,7 +478,7 @@ export default function CashFlowScreen() {
             <TouchableOpacity
               style={styles.saveButton}
               onPress={() => {
-                alert('Movimentação adicionada com sucesso!');
+                Alert.alert('Sucesso', 'Movimentação adicionada com sucesso!');
                 setShowNewModal(false);
                 setNewMovement({ description: '', type: 'in', value: '', category: '' });
               }}

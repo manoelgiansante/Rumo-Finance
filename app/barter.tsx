@@ -1,4 +1,12 @@
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Platform } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  TouchableOpacity,
+  Platform,
+  Alert,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, router } from 'expo-router';
 import {
@@ -135,7 +143,16 @@ export default function BarterScreen() {
               <Text style={styles.title}>Contratos de Barter</Text>
               <Text style={styles.subtitle}>Troca de insumos por produção</Text>
             </View>
-            <TouchableOpacity style={styles.addButton} onPress={() => {}} activeOpacity={0.7}>
+            <TouchableOpacity
+              style={styles.addButton}
+              onPress={() =>
+                Alert.alert(
+                  'Novo Barter',
+                  'A criação de contratos de barter estará disponível em breve.'
+                )
+              }
+              activeOpacity={0.7}
+            >
               <Plus size={20} color={Colors.white} />
               <Text style={styles.addButtonText}>Novo</Text>
             </TouchableOpacity>

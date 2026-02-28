@@ -10,12 +10,14 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { X, Save, DollarSign } from 'lucide-react-native';
 import { useApp } from '@/providers/AppProvider';
+import { useAuth } from '@/contexts/AuthContext';
 import Colors from '@/constants/colors';
 import { router } from 'expo-router';
 import { useState } from 'react';
 
 export default function AddRevenueScreen() {
   const { addRevenue, operations, clients } = useApp();
+  const { profile } = useAuth();
   const [description, setDescription] = useState('');
   const [selectedOperation, setSelectedOperation] = useState('');
   const [selectedClient, setSelectedClient] = useState('');
@@ -37,7 +39,7 @@ export default function AddRevenueScreen() {
       status: 'pending',
       paymentMethod: 'transfer',
       attachments: [],
-      createdBy: 'user-1',
+      createdBy: profile?.id || 'anonymous',
     });
 
     router.back();

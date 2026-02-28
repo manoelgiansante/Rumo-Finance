@@ -3,7 +3,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack } from 'expo-router';
 import { Plus, Search, TrendingUp, Clock, CheckCircle2, AlertCircle } from 'lucide-react-native';
 import Colors from '@/constants/colors';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import { useApp } from '@/providers/AppProvider';
 import { format } from 'date-fns';
 
 interface Receivable {
@@ -17,21 +18,45 @@ interface Receivable {
   invoiceNumber?: string;
 }
 
-const mockReceivables: Receivable[] = [];
-
 export default function ReceivablesScreen() {
+  const { revenues, clients, operations } = useApp();
   const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredReceivables = mockReceivables.filter(
+  // Derive receivables from real revenues
+  const receivables: Receivable[] = useMemo(() => {
+    const now = new Date();
+    return revenues.map((rev) => {
+      const client = clients.find((c) => c.id === rev.clientId);
+      const operation = operations.find((o) => o.id === rev.operationId);
+      const dueDate = rev.dueDate instanceof Date ? rev.dueDate : new Date(rev.dueDate);
+      let status: Receivable['status'] = 'pending';
+      if (rev.status === 'received') {
+        status = 'received';
+      } else if (dueDate < now) {
+        status = 'overdue';
+      }
+      return {
+        id: rev.id,
+        description: rev.description,
+        clientName: client?.name || 'Cliente não informado',
+        operation: operation?.name || rev.category || 'Geral',
+        value: rev.value,
+        dueDate,
+        status,
+      };
+    });
+  }, [revenues, clients, operations]);
+
+  const filteredReceivables = receivables.filter(
     (item) =>
       item.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.clientName.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const totalPending = mockReceivables
+  const totalPending = receivables
     .filter((r) => r.status === 'pending')
     .reduce((sum, r) => sum + r.value, 0);
-  const overdueCount = mockReceivables.filter((r) => r.status === 'overdue').length;
+  const overdueCount = receivables.filter((r) => r.status === 'overdue').length;
 
   const getStatusInfo = (status: Receivable['status']) => {
     switch (status) {

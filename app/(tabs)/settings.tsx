@@ -151,7 +151,10 @@ export default function SettingsScreen() {
                 </TouchableOpacity>
 
                 {isLogin && (
-                  <TouchableOpacity style={styles.forgotPassword}>
+                  <TouchableOpacity
+                    style={styles.forgotPassword}
+                    onPress={() => router.push('/login')}
+                  >
                     <Text style={styles.forgotPasswordText}>Esqueci minha senha</Text>
                   </TouchableOpacity>
                 )}
@@ -207,7 +210,7 @@ export default function SettingsScreen() {
                       onPress: async () => {
                         try {
                           await signOut();
-                        } catch (error) {
+                        } catch {
                           Alert.alert('Erro', 'Não foi possível sair da conta');
                         }
                       },
@@ -239,7 +242,12 @@ export default function SettingsScreen() {
             />
           </View>
 
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() =>
+              Alert.alert('Aparência', 'Em breve você poderá alternar entre tema claro e escuro.')
+            }
+          >
             <View style={styles.menuIcon}>
               <Palette size={18} color={Colors.textSecondary} strokeWidth={1.5} />
             </View>
@@ -247,7 +255,15 @@ export default function SettingsScreen() {
             <ChevronRight size={18} color={Colors.textSecondary} strokeWidth={1.5} />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() =>
+              Alert.alert(
+                'Idioma e Região',
+                'O idioma atual é Português (Brasil). Novos idiomas serão adicionados em breve.'
+              )
+            }
+          >
             <View style={styles.menuIcon}>
               <Globe size={18} color={Colors.textSecondary} strokeWidth={1.5} />
             </View>
@@ -300,7 +316,15 @@ export default function SettingsScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Dados</Text>
 
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() =>
+              Alert.alert(
+                'Exportar Dados',
+                'A exportação de dados em Excel/PDF estará disponível em breve.'
+              )
+            }
+          >
             <View style={styles.menuIcon}>
               <FileText size={18} color={Colors.textSecondary} strokeWidth={1.5} />
             </View>
@@ -308,7 +332,17 @@ export default function SettingsScreen() {
             <ChevronRight size={18} color={Colors.textSecondary} strokeWidth={1.5} />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() =>
+              Alert.alert(
+                'Sincronização',
+                isAuthenticated
+                  ? 'Seus dados estão sincronizados com a nuvem.'
+                  : 'Faça login para sincronizar seus dados na nuvem.'
+              )
+            }
+          >
             <View style={styles.menuIcon}>
               <Settings size={18} color={Colors.textSecondary} strokeWidth={1.5} />
             </View>

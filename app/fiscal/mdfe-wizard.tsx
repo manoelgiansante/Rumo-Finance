@@ -1,4 +1,12 @@
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  TouchableOpacity,
+  TextInput,
+  Alert,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, router } from 'expo-router';
 import { useState } from 'react';
@@ -88,7 +96,7 @@ export default function MDFeWizardScreen() {
 
   const handleFinish = () => {
     // Simular transmissão do MDF-e
-    alert('MDF-e transmitido com sucesso!');
+    Alert.alert('Sucesso', 'MDF-e transmitido com sucesso!');
     router.back();
   };
 
